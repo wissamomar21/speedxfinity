@@ -1,0 +1,601 @@
+فواتير المرتجعات
+
+
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرتجع شحنات - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+    <!-- الشريط العلوي -->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center ml-6 gap-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-600 hover:text-gray-800 font-semibold">الشحنات</a>
+                    </li>
+                    <li class="text-blue-600 font-bold">فواتير المرتجات </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- عنوان الصفحة -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="text-right">
+                    <h1 class="text-4xl font-bold text-white mb-2">فواتير المرتجعات</h1>
+                    <p class="text-white/80 text-lg">إدارة فواتير الشحنات المرتجعة</p>
+                </div>
+            </div>
+
+            <!-- منطقة البحث وإضافة فاتورة -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 text-right">
+                <div class="flex flex-col lg:flex-row gap-6 items-end">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">فاتورة مرتجع</label>
+                        <input type="text" id="invoiceNumber" placeholder="أدخل رقم الفاتورة أو اختر من التالي" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white 
+                       placeholder-gray-600 text-gray-700 focus:outline-none focus:ring-2 
+                       focus:ring-blue-500" />
+                    </div>
+                    <div>
+                        <button onclick="addInvoice()" class="btn-primary-custom ">
+                            اذهب
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- منطقة عرض الفواتير -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800">قائمة الفواتير المرتجعة</h2>
+                </div>
+
+                <div class="p-6">
+                    <!-- حالة فارغة -->
+                    <div id="emptyState" class="empty-state">
+                        <div class="text-6xl mb-4">📋</div>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">لا يوجد بيانات</h3>
+                        <p class="text-gray-500 mb-4">لم يتم إضافة أي فواتير مرتجعة بعد</p>
+                        <p class="text-sm text-gray-400">قم بإدخال رقم الفاتورة في الحقل أعلاه للبدء</p>
+                    </div>
+
+                    <!-- قائمة الفواتير -->
+                    <div id="invoicesList" class="hidden space-y-4">
+                        <!-- سيتم إضافة الفواتير هنا ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm bg-blue-600 text-white rounded-lg mb-1">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let sidebarOpen = false;
+
+        // عناصر DOM
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        // إدارة الشريط الجانبي
+        function openSidebarFunc() {
+            sidebar.classList.remove('sidebar-closed');
+            sidebar.classList.add('sidebar-open');
+            mainContent.style.marginRight = '320px';
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            mainContent.style.marginRight = '0';
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        }
+
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            } else {
+                openSidebarFunc();
+            }
+        }
+
+        // ربط أزرار التحكم
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', () => {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+
+        // دالة تبديل القائمة الفرعية
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+
+        // عند تحميل الصفحة، تأكد أن السايد بار مغلق والمساحة كاملة للمحتوى
+        window.addEventListener('DOMContentLoaded', () => {
+            closeSidebar();
+        });
+
+        // دالة تبديل القائمة الفرعية (مثلاً لإعدادات أو غيرها)
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        toggleSubmenu('shipments');
+        // إضافة فاتورة جديدة
+        function addInvoice() {
+            const invoiceNumber = document.getElementById('invoiceNumber').value.trim();
+
+            if (!invoiceNumber) {
+                alert('يرجى إدخال رقم الفاتورة');
+                return;
+            }
+
+            // التحقق من عدم تكرار الفاتورة
+            if (invoices.find(inv => inv.number === invoiceNumber)) {
+                alert('هذه الفاتورة موجودة بالفعل');
+                return;
+            }
+
+            // إضافة الفاتورة الجديدة
+            const newInvoice = {
+                id: Date.now(),
+                number: invoiceNumber,
+                date: new Date().toLocaleDateString('ar-EG'),
+                status: 'pending',
+                amount: Math.floor(Math.random() * 1000) + 100 // مبلغ عشوائي للتجربة
+            };
+
+            invoices.push(newInvoice);
+            document.getElementById('invoiceNumber').value = '';
+            displayInvoices();
+        }
+
+        // عرض الفواتير
+        function displayInvoices() {
+            const emptyState = document.getElementById('emptyState');
+            const invoicesList = document.getElementById('invoicesList');
+
+            if (invoices.length === 0) {
+                emptyState.classList.remove('hidden');
+                invoicesList.classList.add('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            invoicesList.classList.remove('hidden');
+
+            invoicesList.innerHTML = invoices.map(invoice => `
+                    <div class="invoice-card fade-in">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h3 class="text-xl font-bold text-gray-800">فاتورة رقم: ${invoice.number}</h3>
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${getStatusClass(invoice.status)}">
+                                        ${getStatusText(invoice.status)}
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h3z" />
+                                        </svg>
+                                        <span>رقم الفاتورة: ${invoice.number}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h3z" />
+                                        </svg>
+                                        <span>التاريخ: ${invoice.date}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                        </svg>
+                                        <span>المبلغ: ${invoice.amount} جنيه</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="viewInvoice(${invoice.id})" class="btn btn-sm btn-outline btn-primary">
+                                    عرض
+                                </button>
+                                <button onclick="deleteInvoice(${invoice.id})" class="btn btn-sm btn-outline btn-error">
+                                    حذف
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // حذف فاتورة
+        function deleteInvoice(invoiceId) {
+            if (confirm('هل أنت متأكد من حذف هذه الفاتورة؟')) {
+                invoices = invoices.filter(inv => inv.id !== invoiceId);
+                displayInvoices();
+            }
+        }
+
+        // عرض تفاصيل الفاتورة
+        function viewInvoice(invoiceId) {
+            const invoice = invoices.find(inv => inv.id === invoiceId);
+            if (invoice) {
+                alert(`تفاصيل الفاتورة:\nرقم الفاتورة: ${invoice.number}\nالتاريخ: ${invoice.date}\nالمبلغ: ${invoice.amount} جنيه\nالحالة: ${getStatusText(invoice.status)}`);
+            }
+        }
+
+        // دوال مساعدة
+        function getStatusClass(status) {
+            const statusClasses = {
+                pending: 'bg-yellow-100 text-yellow-800',
+                completed: 'bg-green-100 text-green-800',
+                cancelled: 'bg-red-100 text-red-800'
+            };
+            return statusClasses[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getStatusText(status) {
+            const statusTexts = {
+                pending: 'قيد المعالجة',
+                completed: 'مكتملة',
+                cancelled: 'ملغية'
+            };
+            return statusTexts[status] || 'غير محدد';
+        }
+
+        // إعداد الأحداث
+        document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+
+        // السماح بالضغط على Enter لإضافة الفاتورة
+        document.getElementById('invoiceNumber').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                addInvoice();
+            }
+        });
+
+        // تحميل البيانات عند بدء التشغيل
+        document.addEventListener('DOMContentLoaded', function () {
+            displayInvoices();
+        });
+    </script>
+</body>
+
+</html>

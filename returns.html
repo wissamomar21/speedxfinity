@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>المرتجعات - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .table-row-hover:hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+        }
+
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+
+        .table-header {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'cairo': ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+
+    <!-- الشريط العلوى-->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center gap-6 ml-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li>
+                        <a href="setting.html" class="text-gray-600 hover:text-gray-800 font-semibold">الشحنات</a>
+                    </li>
+                    <li class="text-blue-600 font-bold">المرتجعات</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- عنوان الصفحة مع زر الإضافة تحته -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    شحنات المرتجع </h2>
+
+                <!-- زر الإضافة -->
+                <button id="addLineBtn"
+                    class="btn btn-success shadow-lg hover:shadow-xl transition-all duration-300 w-full md:w-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block ml-2" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    إضافة مرتجع جديد
+                </button>
+            </div>
+        </div>
+        <!-- Pending Returns Table -->
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-8 card-hover animate-fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-purple-700 flex items-center gap-2">
+                    <i class="fas fa-clock text-yellow-600"></i>
+                    شحنات تحت المرتجع
+                </h2>
+                <div class="relative">
+                    <input id="searchPending" type="text" placeholder="بحث..."
+                        class="input input-bordered input-sm pr-10 w-64 rounded-xl border-gray-300 focus:border-purple-500 focus:ring-purple-500 search-input" />
+                    <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="table w-full text-sm bg-white">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">كود</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">تاريخ الأوردر</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">اسم المخزن</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">اسم الشركة</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">العنوان</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">التليفون</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">السعر</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">نوع المنتج</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">الكمية</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">الفاتورة</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">السعر بدون شحن</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">رقم الأوردر</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">العميل</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">الحالة</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold text-center">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingTable">
+                        <tr class="table-row-hover">
+                            <td class="px-4 py-3 font-medium">R001</td>
+                            <td class="px-4 py-3">2025-08-05</td>
+                            <td class="px-4 py-3">مخزن 1</td>
+                            <td class="px-4 py-3">شركة ABC</td>
+                            <td class="px-4 py-3">القاهرة</td>
+                            <td class="px-4 py-3">0100000000</td>
+                            <td class="px-4 py-3 font-semibold">500 ج.م</td>
+                            <td class="px-4 py-3">إلكترونيات</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3">F123</td>
+                            <td class="px-4 py-3">450 ج.م</td>
+                            <td class="px-4 py-3">O1001</td>
+                            <td class="px-4 py-3">أحمد علي</td>
+                            <td class="px-4 py-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800">تحت
+                                    المرتجع</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex gap-2 justify-center">
+                                    <button
+                                        class="p-2 rounded-lg transition-all duration-200 hover:scale-110 text-blue-600 hover:bg-blue-100">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button
+                                        class="p-2 rounded-lg transition-all duration-200 hover:scale-110 text-green-600 hover:bg-green-100">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button
+                                        class="p-2 rounded-lg transition-all duration-200 hover:scale-110 text-red-600 hover:bg-red-100">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Returned Items Table -->
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 card-hover animate-fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-purple-700 flex items-center gap-2">
+                    <i class="fas fa-box-open text-red-600"></i>
+                    شحنات تم إرجاعها / تلفها / فقدها
+                </h2>
+                <div class="relative">
+                    <input id="searchReturned" type="text" placeholder="بحث..."
+                        class="input input-bordered input-sm pr-10 w-64 rounded-xl border-gray-300 focus:border-purple-500 focus:ring-purple-500 search-input" />
+                    <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="table w-full text-sm bg-white">
+                    <thead class="bg-gradient-to-r from-red-50 to-pink-50">
+                        <tr>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">كود</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">تاريخ الأوردر</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">اسم المخزن</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">اسم الشركة</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">العنوان</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">التليفون</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">السعر</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">نوع المنتج</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">الكمية</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">الفاتورة</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">السعر بدون شحن</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">رقم الأوردر</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">العميل</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold">الحالة</th>
+                            <th class="px-4 py-3 text-gray-700 font-semibold text-center">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="returnedTable">
+                        <tr class="table-row-hover">
+                            <td class="px-4 py-3 font-medium">R002</td>
+                            <td class="px-4 py-3">2025-08-01</td>
+                            <td class="px-4 py-3">مخزن 2</td>
+                            <td class="px-4 py-3">شركة XYZ</td>
+                            <td class="px-4 py-3">الجيزة</td>
+                            <td class="px-4 py-3">0111111111</td>
+                            <td class="px-4 py-3 font-semibold">300 ج.م</td>
+                            <td class="px-4 py-3">ملابس</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3">F456</td>
+                            <td class="px-4 py-3">280 ج.م</td>
+                            <td class="px-4 py-3">O1002</td>
+                            <td class="px-4 py-3">منى محمد</td>
+                            <td class="px-4 py-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">تم
+                                    الإرجاع</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex gap-2 justify-center">
+                                    <button class="action-btn text-blue-600 hover:bg-blue-100">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn text-green-600 hover:bg-green-100">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn text-red-600 hover:bg-red-100">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm bg-blue-600 text-white rounded-lg mb-1">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let sidebarOpen = false;
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        // Sidebar Management
+        function openSidebarFunc() {
+            sidebar.classList.remove('sidebar-closed');
+            sidebar.classList.add('sidebar-open');
+            mainContent.style.marginRight = '320px';
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            mainContent.style.marginRight = '0';
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        }
+
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            } else {
+                openSidebarFunc();
+            }
+        }
+
+        // Event Listeners
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', () => {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+        toggleSubmenu('shipments');
+
+
+        // Submenu Toggle Function
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // Search Functionality
+        function searchTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const table = document.getElementById(tableId);
+
+            input.addEventListener('input', () => {
+                const searchTerm = input.value.toLowerCase();
+                const rows = table.getElementsByTagName('tr');
+
+                Array.from(rows).forEach(row => {
+                    const cells = row.getElementsByTagName('td');
+                    if (cells.length > 0) {
+                        const match = Array.from(cells).some(cell =>
+                            cell.innerText.toLowerCase().includes(searchTerm)
+                        );
+                        row.style.display = match ? '' : 'none';
+                    }
+                });
+            });
+        }
+
+        // Initialize search for both tables
+        searchTable('searchPending', 'pendingTable');
+        searchTable('searchReturned', 'returnedTable');
+
+        // Add Return Button Event
+        document.getElementById('addReturnBtn').addEventListener('click', () => {
+            alert('إضافة شحنة مرتجع جديدة');
+        });
+
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 768 && sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-open shipments submenu as in original
+            const shipmentsSubmenu = document.getElementById('shipments-submenu');
+            const shipmentsArrow = document.getElementById('shipments-arrow');
+            shipmentsSubmenu.classList.add('open');
+            shipmentsArrow.classList.add('rotate-180');
+        });
+    </script>
+</body>
+
+</html>

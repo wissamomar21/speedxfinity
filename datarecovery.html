@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>استيراد البيانات - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            min-height: 200px;
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            transform: scale(1.02);
+        }
+
+        .upload-area.success {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+        }
+
+        .file-info {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #0ea5e9;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* بطاقة الشحنة الجديدة */
+        .shipment-card {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shipment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4);
+        }
+
+        .shipment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+        }
+
+        .shipment-card-header {
+            margin-bottom: 16px;
+        }
+
+        .shipment-id {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f9fafb;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .shipment-count {
+            font-size: 0.9rem;
+            color: #d1d5db;
+            font-weight: 500;
+        }
+
+        .shipment-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .status-delivered {
+            background-color: #065f46;
+            color: #6ee7b7;
+        }
+
+        .status-pending {
+            background-color: #92400e;
+            color: #fcd34d;
+        }
+
+        .status-cancelled {
+            background-color: #991b1b;
+            color: #fca5a5;
+        }
+
+        .status-processing {
+            background-color: #1e40af;
+            color: #93c5fd;
+        }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            border-radius: 2px;
+            transform-origin: left;
+            transition: width 0.3s ease;
+        }
+
+        .grid-responsive {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-responsive {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* تحسين زر الاستيراد */
+        .btn-import {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-import:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+            color: white;
+        }
+
+        .btn-import:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* رسالة النجاح */
+        .success-message {
+            position: fixed;
+            top: 6rem;
+            right: 1.5rem;
+            z-index: 50;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+    <!-- الشريط العلوي -->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center ml-6 gap-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-600 hover:text-gray-800 font-semibold">الشحنات</a>
+                    </li>
+                    <li class="text-blue-600 font-bold">استيراد البيانات</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- عنوان الصفحة -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <button onclick="clearData()"
+                        class="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-blue-700 shadow-lg transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        مسح البيانات
+                    </button>
+                    <button onclick="exportData()"
+                        class="btn btn-success btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        تصدير البيانات
+                    </button>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-2">استيراد البيانات</h1>
+                    <p class="text-white/80 text-lg">استيراد ومعالجة بيانات الشحنات</p>
+                </div>
+            </div>
+
+            <!-- بطاقات الإحصائيات -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <!-- إجمالي الشحنات -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">📦</div>
+                    <h3 class="text-lg font-bold mb-2">إجمالي الشحنات</h3>
+                    <p class="text-3xl font-bold mb-1" id="totalShipments">0</p>
+                    <p class="text-white/80 text-sm">شحنة محملة</p>
+                </div>
+
+                <!-- الشحنات المُسلمة -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">✅</div>
+                    <h3 class="text-lg font-bold mb-2">تم التسليم</h3>
+                    <p class="text-3xl font-bold mb-1" id="deliveredShipments">0</p>
+                    <p class="text-white/80 text-sm">شحنة مُسلمة</p>
+                </div>
+
+                <!-- الشحنات المعلقة -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">⏳</div>
+                    <h3 class="text-lg font-bold mb-2">قيد المعالجة</h3>
+                    <p class="text-3xl font-bold mb-1" id="pendingShipments">0</p>
+                    <p class="text-white/80 text-sm">شحنة معلقة</p>
+                </div>
+
+                <!-- الشحنات الملغية -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">❌</div>
+                    <h3 class="text-lg font-bold mb-2">ملغية</h3>
+                    <p class="text-3xl font-bold mb-1" id="cancelledShipments">0</p>
+                    <p class="text-white/80 text-sm">شحنة ملغية</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <!-- قسم رفع الملفات -->
+                <div class="xl:col-span-1">
+                    <div class="card glass-effect shadow-2xl rounded-2xl overflow-hidden">
+                        <div class="card-body p-0">
+                            <div class="p-6 border-b border-gray-200">
+                                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    📷 رفع صورة الشحنة
+                                </h2>
+                                <p class="text-gray-600 mt-2">قم برفع صورة لبيانات الشحنة</p>
+                            </div>
+
+                            <div class="p-6">
+                                <!-- منطقة رفع الملفات -->
+                                <div id="uploadArea"
+                                    class="upload-area flex flex-col items-center justify-center p-8 cursor-pointer"
+                                    onclick="document.getElementById('shipmentImage').click()">
+                                    <div id="uploadContent">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xl font-semibold text-gray-700 mb-2">اسحب صورة الشحنة هنا أو اضغط
+                                            للاختيار</p>
+                                        <p class="text-sm text-gray-500 mb-4">يدعم ملفات الصور (JPG, PNG, GIF)</p>
+                                        <p class="text-xs text-gray-400">الحد الأقصى: 5 ميجابايت</p>
+                                    </div>
+                                    <input type="file" id="shipmentImage" accept="image/*" class="hidden"
+                                        onchange="handleImageUpload(this)" />
+                                </div>
+
+                                <!-- معاينة الصورة -->
+                                <div id="imagePreview" class="hidden mt-6">
+                                    <h4 class="text-lg font-semibold text-gray-700 mb-3">معاينة الصورة:</h4>
+                                    <div class="flex justify-center">
+                                        <img id="previewImg" src="" alt="معاينة الصورة"
+                                            class="max-w-full max-h-64 rounded-lg shadow-lg border" />
+                                    </div>
+                                </div>
+
+                                <!-- معلومات الصورة المحددة -->
+                                <div id="imageInfo" class="hidden file-info rounded-lg p-4 mt-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <div>
+                                                <p class="font-semibold text-gray-800" id="imageName">اسم الصورة</p>
+                                                <p class="text-sm text-gray-600" id="imageSize">حجم الصورة</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="progressContainer" class="hidden mt-3">
+                                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                            <span>جاري المعالجة...</span>
+                                            <span id="progressText">0%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div id="progressBar" class="progress-bar h-2 rounded-full"
+                                                style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- زر الاستيراد المحسن -->
+                                <button id="importBtn" onclick="importData()"
+                                    class="btn-import btn btn-lg w-full mt-6 disabled:opacity-50" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    <span id="importBtnText">استيراد البيانات</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم البحث والنتائج -->
+                <div class="xl:col-span-2">
+                    <div class="card glass-effect shadow-2xl rounded-2xl overflow-hidden">
+                        <div class="card-body p-0">
+                            <div class="p-6 border-b border-gray-200">
+                                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                                    🔍 البحث في الشحنات
+                                </h2>
+                            </div>
+
+                            <!-- شريط البحث -->
+                            <div class="p-6 border-b border-gray-200">
+                                <div class="search-container">
+                                    <div class="form-control w-full">
+                                        <label class="label">
+                                            <span class="label-text font-semibold text-gray-700">البحث عن شحنة</span>
+                                        </label>
+                                        <div class="relative">
+                                            <input type="text" id="searchInput"
+                                                placeholder="ابحث برقم الشحنة، اسم العميل، أو العنوان..."
+                                                class="input input-bordered w-full pr-12" onkeyup="searchShipments()" />
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5 absolute right-4 top-4 text-gray-400" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- فلاتر البحث -->
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                        <div class="form-control">
+                                            <label class="label">
+                                                <span class="label-text font-medium text-gray-600">الحالة</span>
+                                            </label>
+                                            <select id="statusFilter" class="select select-bordered"
+                                                onchange="filterShipments()">
+                                                <option value="">جميع الحالات</option>
+                                                <option value="delivered">تم التسليم</option>
+                                                <option value="pending">قيد المعالجة</option>
+                                                <option value="cancelled">ملغية</option>
+                                                <option value="processing">قيد التجهيز</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-control">
+                                            <label class="label">
+                                                <span class="label-text font-medium text-gray-600">من تاريخ</span>
+                                            </label>
+                                            <input type="date" id="dateFromFilter" class="input input-bordered"
+                                                onchange="filterShipments()" />
+                                        </div>
+                                        <div class="form-control">
+                                            <label class="label">
+                                                <span class="label-text font-medium text-gray-600">إلى تاريخ</span>
+                                            </label>
+                                            <input type="date" id="dateToFilter" class="input input-bordered"
+                                                onchange="filterShipments()" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- نتائج البحث -->
+                            <div class="p-6">
+                                <div id="searchResults" class="search-results">
+                                    <div id="noDataMessage" class="text-center py-12">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7" />
+                                        </svg>
+                                        <h3 class="text-xl font-semibold text-gray-600 mb-2">لا توجد بيانات حالياً</h3>
+                                        <p class="text-gray-500">قم بتحميل ملف البيانات أولاً لعرض الشحنات</p>
+                                    </div>
+                                    <div id="shipmentsContainer" class="hidden grid-responsive"></div>
+                                </div>
+                            </div>
+
+                            <!-- شريط الصفحات -->
+                            <div id="paginationContainer" class="hidden p-6 border-t border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-600">
+                                        عرض <span id="showingFrom">1</span> إلى <span id="showingTo">10</span> من <span
+                                            id="totalResults">0</span> نتيجة
+                                    </div>
+                                    <div class="join">
+                                        <button id="prevBtn" class="join-item btn btn-outline"
+                                            onclick="changePage(-1)">السابق</button>
+                                        <button class="join-item btn btn-outline btn-active"
+                                            id="currentPageBtn">1</button>
+                                        <button id="nextBtn" class="join-item btn btn-outline"
+                                            onclick="changePage(1)">التالي</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm bg-blue-600 text-white rounded-lg mb-1">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let sidebarOpen = false;
+        let shipments = [];
+        let filteredShipments = [];
+        let currentPage = 1;
+        let itemsPerPage = 8;
+        let selectedFile = null;
+
+        // عناصر DOM
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        // إدارة الشريط الجانبي
+        function openSidebarFunc() {
+            sidebar.classList.remove('sidebar-closed');
+            sidebar.classList.add('sidebar-open');
+            mainContent.style.marginRight = '320px';
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            mainContent.style.marginRight = '0';
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        }
+
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            } else {
+                openSidebarFunc();
+            }
+        }
+
+        // ربط أزرار التحكم
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', () => {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+
+        // دالة تبديل القائمة الفرعية
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // معالجة سحب وإفلات الملفات
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('uploadArea');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+                document.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                uploadArea.classList.add('dragover');
+            }
+
+            function unhighlight(e) {
+                uploadArea.classList.remove('dragover');
+            }
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length > 0) {
+                    handleImageUpload({ files: files });
+                }
+            }
+        }
+
+        // معالجة رفع الصور
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const image = input.files[0];
+                const imageName = image.name;
+                const imageSize = (image.size / 1024 / 1024).toFixed(2) + ' MB';
+
+                // التحقق من نوع الصورة
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+                if (!allowedTypes.includes(image.type)) {
+                    alert('نوع الصورة غير مدعوم. يرجى اختيار صورة JPG أو PNG أو GIF.');
+                    return;
+                }
+
+                // التحقق من حجم الصورة (5 MB)
+                if (image.size > 5 * 1024 * 1024) {
+                    alert('حجم الصورة كبير جداً. الحد الأقصى 5 ميجابايت.');
+                    return;
+                }
+
+                selectedFile = image;
+
+                // عرض معاينة الصورة
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(image);
+
+                // عرض معلومات الصورة
+                document.getElementById('imageName').textContent = imageName;
+                document.getElementById('imageSize').textContent = imageSize;
+                document.getElementById('imageInfo').classList.remove('hidden');
+
+                // تفعيل زر الاستيراد
+                const importBtn = document.getElementById('importBtn');
+                importBtn.disabled = false;
+                importBtn.classList.remove('opacity-50');
+            }
+        }
+
+        // استيراد البيانات - الوظيفة الرئيسية
+        function importData() {
+            if (!selectedFile) {
+                alert('يرجى اختيار صورة أولاً');
+                return;
+            }
+
+            const importBtn = document.getElementById('importBtn');
+            const importBtnText = document.getElementById('importBtnText');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            // تعطيل الزر وإظهار شريط التقدم
+            importBtn.disabled = true;
+            importBtn.classList.add('opacity-50');
+            importBtnText.innerHTML = '<span class="loading loading-spinner loading-sm"></span> جاري الاستيراد...';
+            progressContainer.classList.remove('hidden');
+
+            // محاكاة عملية الرفع والمعالجة
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        processImportedData();
+                        resetImportUI();
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        // معالجة البيانات المستوردة (محاكاة)
+        function processImportedData() {
+            // بيانات تجريبية واقعية
+            const sampleData = [
+                {
+                    id: 'SH001',
+                    customerName: 'أحمد محمد علي',
+                    address: 'شارع التحرير، المعادي، القاهرة',
+                    phone: '01012345678',
+                    status: 'delivered',
+                    date: '2025-02-02',
+                    amount: 150.00,
+                    notes: 'تم التسليم بنجاح',
+                    deliveryCount: 2
+                },
+                {
+                    id: 'SH002',
+                    customerName: 'فاطمة أحمد حسن',
+                    address: 'شارع النيل، المهندسين، الجيزة',
+                    phone: '01098765432',
+                    status: 'pending',
+                    date: '2025-02-02',
+                    amount: 275.50,
+                    notes: 'في انتظار التسليم',
+                    deliveryCount: 1
+                },
+                {
+                    id: 'SH003',
+                    customerName: 'محمد سعد الدين',
+                    address: 'شارع الهرم، العمرانية، الجيزة',
+                    phone: '01156789012',
+                    status: 'processing',
+                    date: '2025-02-02',
+                    amount: 89.99,
+                    notes: 'قيد التجهيز',
+                    deliveryCount: 1
+                },
+                {
+                    id: 'SH004',
+                    customerName: 'سارة عبد الرحمن',
+                    address: 'شارع الجامعة، مدينة نصر، القاهرة',
+                    phone: '01234567890',
+                    status: 'cancelled',
+                    date: '2025-02-01',
+                    amount: 320.75,
+                    notes: 'تم إلغاء الطلب بناءً على طلب العميل',
+                    deliveryCount: 0
+                },
+                {
+                    id: 'SH005',
+                    customerName: 'خالد أحمد محمود',
+                    address: 'شارع الملك فيصل، الدقي، الجيزة',
+                    phone: '01087654321',
+                    status: 'delivered',
+                    date: '2025-02-01',
+                    amount: 195.25,
+                    notes: 'تم التسليم في الموعد المحدد',
+                    deliveryCount: 1
+                },
+                {
+                    id: 'SH006',
+                    customerName: 'نور الهدى سمير',
+                    address: 'شارع الثورة، الإسكندرية',
+                    phone: '01123456789',
+                    status: 'processing',
+                    date: '2025-02-03',
+                    amount: 425.00,
+                    notes: 'قيد التجهيز للشحن',
+                    deliveryCount: 1
+                }
+            ];
+
+            shipments = sampleData;
+            filteredShipments = [...shipments];
+            updateStats();
+            displayShipments();
+
+            // إظهار رسالة نجاح
+            showSuccessMessage(`تم استيراد البيانات بنجاح! تم تحديث ${shipments.length} شحنة.`);
+        }
+
+        // إعادة تعيين واجهة الاستيراد
+        function resetImportUI() {
+            const importBtn = document.getElementById('importBtn');
+            const importBtnText = document.getElementById('importBtnText');
+            const progressContainer = document.getElementById('progressContainer');
+
+            importBtn.disabled = false;
+            importBtn.classList.remove('opacity-50');
+            importBtnText.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                استيراد البيانات
+            `;
+            progressContainer.classList.add('hidden');
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            const total = shipments.length;
+            const delivered = shipments.filter(s => s.status === 'delivered').length;
+            const pending = shipments.filter(s => s.status === 'pending').length;
+            const cancelled = shipments.filter(s => s.status === 'cancelled').length;
+
+            document.getElementById('totalShipments').textContent = total;
+            document.getElementById('deliveredShipments').textContent = delivered;
+            document.getElementById('pendingShipments').textContent = pending;
+            document.getElementById('cancelledShipments').textContent = cancelled;
+        }
+
+        // عرض الشحنات كبطاقات
+        function displayShipments() {
+            const container = document.getElementById('shipmentsContainer');
+            const noDataMessage = document.getElementById('noDataMessage');
+            const paginationContainer = document.getElementById('paginationContainer');
+
+            if (filteredShipments.length === 0) {
+                container.classList.add('hidden');
+                noDataMessage.classList.remove('hidden');
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            noDataMessage.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            // حساب الصفحات
+            const totalPages = Math.ceil(filteredShipments.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentShipments = filteredShipments.slice(startIndex, endIndex);
+
+            // عرض الشحنات كبطاقات
+            container.innerHTML = currentShipments.map(shipment => `
+                <div class="shipment-card fade-in">
+                    <div class="shipment-card-header">
+                        <div class="shipment-id">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7" />
+                            </svg>
+                            ${shipment.customerName}
+                        </div>
+                        <div class="shipment-count">عدد المحاولات: ${shipment.deliveryCount || 1}</div>
+                        <span class="status-badge status-${shipment.status}">
+                            ${getStatusText(shipment.status)}
+                        </span>
+                    </div>
+
+                    <div class="shipment-details text-sm text-gray-300 space-y-2 mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-400">#</span>
+                            <span>${shipment.id}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-400">📞</span>
+                            <span>${shipment.phone}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-400">💰</span>
+                            <span>${shipment.amount} جنيه</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-400">📅</span>
+                            <span>${formatDate(shipment.date)}</span>
+                        </div>
+                    </div>
+
+                    <div class="shipment-actions">
+                        <button class="btn-delete" onclick="deleteShipment('${shipment.id}')">
+                            حذف
+                        </button>
+                        <button class="btn-edit" onclick="editShipment('${shipment.id}')">
+                            تعديل
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // تحديث شريط الصفحات
+            updatePagination();
+        }
+
+        // تحديث شريط الصفحات
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredShipments.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredShipments.length);
+
+            document.getElementById('showingFrom').textContent = startIndex + 1;
+            document.getElementById('showingTo').textContent = endIndex;
+            document.getElementById('totalResults').textContent = filteredShipments.length;
+            document.getElementById('currentPageBtn').textContent = currentPage;
+
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+
+            document.getElementById('paginationContainer').classList.remove('hidden');
+        }
+
+        // تغيير الصفحة
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredShipments.length / itemsPerPage);
+            const newPage = currentPage + direction;
+
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                displayShipments();
+            }
+        }
+
+        // البحث في الشحنات
+        function searchShipments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredShipments = shipments.filter(shipment =>
+                shipment.id.toLowerCase().includes(searchTerm) ||
+                shipment.customerName.toLowerCase().includes(searchTerm) ||
+                shipment.address.toLowerCase().includes(searchTerm) ||
+                shipment.phone.includes(searchTerm)
+            );
+
+            currentPage = 1;
+            displayShipments();
+        }
+
+        // تصفية الشحنات
+        function filterShipments() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredShipments = shipments.filter(shipment => {
+                let matchesSearch = !searchTerm ||
+                    shipment.id.toLowerCase().includes(searchTerm) ||
+                    shipment.customerName.toLowerCase().includes(searchTerm) ||
+                    shipment.address.toLowerCase().includes(searchTerm) ||
+                    shipment.phone.includes(searchTerm);
+
+                let matchesStatus = !statusFilter || shipment.status === statusFilter;
+                let matchesDateFrom = !dateFromFilter || shipment.date >= dateFromFilter;
+                let matchesDateTo = !dateToFilter || shipment.date <= dateToFilter;
+
+                return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
+            });
+
+            currentPage = 1;
+            displayShipments();
+        }
+
+        // حذف شحنة
+        function deleteShipment(shipmentId) {
+            if (confirm('هل أنت متأكد من حذف هذه الشحنة؟')) {
+                shipments = shipments.filter(s => s.id !== shipmentId);
+                filteredShipments = filteredShipments.filter(s => s.id !== shipmentId);
+
+                // إذا كانت الصفحة الحالية فارغة، انتقل للصفحة السابقة
+                const totalPages = Math.ceil(filteredShipments.length / itemsPerPage);
+                if (currentPage > totalPages && currentPage > 1) {
+                    currentPage = totalPages;
+                }
+
+                updateStats();
+                displayShipments();
+                showSuccessMessage('تم حذف الشحنة بنجاح!');
+            }
+        }
+
+        // تعديل شحنة (مبسط)
+        function editShipment(shipmentId) {
+            const shipment = shipments.find(s => s.id === shipmentId);
+            if (!shipment) return;
+
+            const newName = prompt('اسم العميل الجديد:', shipment.customerName);
+            if (newName && newName !== shipment.customerName) {
+                shipment.customerName = newName;
+
+                // تحديث المصفوفة المفلترة أيضاً
+                const filteredIndex = filteredShipments.findIndex(s => s.id === shipmentId);
+                if (filteredIndex !== -1) {
+                    filteredShipments[filteredIndex].customerName = newName;
+                }
+
+                displayShipments();
+                showSuccessMessage('تم تحديث بيانات الشحنة بنجاح!');
+            }
+        }
+
+        // مسح البيانات
+        function clearData() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                shipments = [];
+                filteredShipments = [];
+                currentPage = 1;
+                updateStats();
+                displayShipments();
+                showSuccessMessage('تم مسح جميع البيانات بنجاح!');
+            }
+        }
+
+        // تصدير البيانات
+        function exportData() {
+            if (shipments.length === 0) {
+                alert('لا توجد بيانات للتصدير');
+                return;
+            }
+
+            // تحضير البيانات للتصدير
+            const csvData = [
+                ['رقم الشحنة', 'اسم العميل', 'العنوان', 'رقم الهاتف', 'التاريخ', 'المبلغ', 'الحالة', 'عدد المحاولات', 'ملاحظات'],
+                ...shipments.map(shipment => [
+                    shipment.id,
+                    shipment.customerName,
+                    shipment.address,
+                    shipment.phone,
+                    shipment.date,
+                    shipment.amount,
+                    getStatusText(shipment.status),
+                    shipment.deliveryCount || 1,
+                    shipment.notes || ''
+                ])
+            ];
+
+            // تحويل إلى CSV
+            const csvContent = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            // إنشاء ملف وتحميله
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `shipments_export_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+
+            showSuccessMessage('تم تصدير البيانات بنجاح!');
+        }
+
+        // الحصول على نص الحالة
+        function getStatusText(status) {
+            const statusTexts = {
+                'delivered': 'تم التسليم',
+                'pending': 'قيد الانتظار',
+                'cancelled': 'ملغية',
+                'processing': 'قيد التجهيز'
+            };
+            return statusTexts[status] || status;
+        }
+
+        // تنسيق التاريخ
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // إظهار رسالة نجاح محسنة
+        function showSuccessMessage(message) {
+            // إنشاء عنصر التنبيه
+            const alert = document.createElement('div');
+            alert.className = 'success-message';
+            alert.innerHTML = `
+                <div class="pulse-dot"></div>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(alert);
+
+            // إزالة التنبيه بعد 4 ثوانٍ
+            setTimeout(() => {
+                alert.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => alert.remove(), 300);
+            }, 4000);
+        }
+
+        // إعداد الأحداث عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function () {
+            // إعداد سحب وإفلات الملفات
+            setupDragAndDrop();
+
+            // تحديث الإحصائيات في البداية
+            updateStats();
+
+            // فتح قائمة الشحنات افتراضياً
+            toggleSubmenu('shipments');
+
+            // تعيين التاريخ الحالي كافتراضي
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateFromFilter').value = today;
+            document.getElementById('dateToFilter').value = today;
+
+            // إغلاق الشريط الجانبي في البداية
+            closeSidebarFunc();
+        });
+    </script>
+</body>
+
+</html>

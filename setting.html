@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الإعدادات - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .settings-card {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+
+        .settings-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4);
+        }
+
+        .settings-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+        }
+
+        .notification-badge {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 20px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-row {
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: #f8fafc;
+            transform: translateX(-4px);
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+    <!-- الشريط العلوي -->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="flex-1 flex justify-end">
+            <div class="flex items-center gap-4 ml-6">
+                <!-- الإشعارات -->
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle relative hover:bg-blue-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-5-5v-5a5 5 0 0 0-10 0v5l-5 5h5m5 0v1a3 3 0 0 1-6 0v-1m6 0H9" />
+                        </svg>
+                        <span class="notification-badge absolute -top-2 -right-2">3</span>
+                    </div>
+                    <div tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-2xl bg-white rounded-2xl w-80 mt-3">
+                        <div class="p-4 border-b border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-800">الإشعارات</h3>
+                        </div>
+                        <div class="p-2 max-h-64 overflow-y-auto">
+                            <div class="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                    <div>
+                                        <p class="text-sm text-gray-800 font-semibold">مصروف جديد يتطلب موافقة</p>
+                                        <p class="text-xs text-gray-500">منذ 5 دقائق</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <div>
+                                        <p class="text-sm text-gray-800 font-semibold">شحنة جديدة وصلت للمخزن</p>
+                                        <p class="text-xs text-gray-500">منذ 15 دقيقة</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <div>
+                                        <p class="text-sm text-gray-800 font-semibold">تم تسليم 50 شحنة بنجاح</p>
+                                        <p class="text-xs text-gray-500">منذ ساعة</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+        </div>
+        <div class="flex-none flex items-center gap-6 ml-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li class="text-blue-600 font-bold">الاعدادات</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- ترحيب -->
+            <div class="mb-8 fade-in">
+                <h1 class="text-4xl font-bold text-white mb-2">إعدادات النظام</h1>
+                <p class="text-white/80 text-lg">إدارة شاملة لجميع إعدادات النظام والبيانات الأساسية</p>
+                <div class="text-white/60 text-sm mt-2">
+                    آخر تحديث: <span id="lastUpdate"></span>
+                </div>
+            </div>
+
+            <!-- بطاقات الإحصائيات الرئيسية -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 stats-grid">
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">🏢</div>
+                    <h3 class="text-lg font-bold mb-2">إجمالي الشركات</h3>
+                    <p class="text-3xl font-bold mb-1" id="totalCompanies">24</p>
+                    <div class="text-green-300 text-sm">↗ 3 شركات جديدة</div>
+                </div>
+
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">👥</div>
+                    <h3 class="text-lg font-bold mb-2">إجمالي الموظفين</h3>
+                    <p class="text-3xl font-bold mb-1" id="totalEmployees">156</p>
+                    <div class="text-green-300 text-sm">↗ 8 موظفين جدد</div>
+                </div>
+
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">📍</div>
+                    <h3 class="text-lg font-bold mb-2">المواقع النشطة</h3>
+                    <p class="text-3xl font-bold mb-1" id="totalLocations">12</p>
+                    <div class="text-blue-300 text-sm">→ نفس المستوى</div>
+                </div>
+
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">📦</div>
+                    <h3 class="text-lg font-bold mb-2">المخازن</h3>
+                    <p class="text-3xl font-bold mb-1" id="totalWarehouses">8</p>
+                    <div class="text-yellow-300 text-sm">⚠ 2 تحتاج صيانة</div>
+                </div>
+            </div>
+
+            <!-- بطاقات الإعدادات الرئيسية -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    أقسام الإعدادات
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 settings-grid">
+                    <!-- إدارة المخزن -->
+                    <div class="settings-card fade-in cursor-pointer" onclick="showSection('stors.html')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">🏪</div>
+                                <h3 class="text-xl font-bold mb-2">إدارة المخزن</h3>
+                                <p class="text-gray-300 text-sm mb-4">إدارة المخازن والمواقع وسعات التخزين</p>
+                                <div class="flex items-center gap-4 text-sm">
+                                    <span class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full">8 مخازن</span>
+                                    <span class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">85% ممتلئة</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-blue-300 mt-4">
+                                <span class="text-sm font-medium">إدارة المخازن</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- إدارة الموظفين -->
+                    <div class="settings-card fade-in cursor-pointer" onclick="showSection('employee.html')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">👥</div>
+                                <h3 class="text-xl font-bold mb-2">إدارة الموظفين</h3>
+                                <p class="text-gray-300 text-sm mb-4">إضافة وإدارة بيانات الموظفين والمناصب</p>
+                                <div class="flex items-center gap-4 text-sm">
+                                    <span class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full">156 موظف</span>
+                                    <span class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full">12 قسم</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-green-300 mt-4">
+                                <span class="text-sm font-medium">إدارة الموظفين</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- إدارة الشركات -->
+                    <div class="settings-card fade-in cursor-pointer" onclick="showSection('companies')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">🏢</div>
+                                <h3 class="text-xl font-bold mb-2">إدارة الشركات</h3>
+                                <p class="text-gray-300 text-sm mb-4">إدارة بيانات الشركات والعملاء</p>
+                                <div class="flex items-center gap-4 text-sm">
+                                    <span class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full">24 شركة</span>
+                                    <span class="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full">نشطة</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-orange-300 mt-4">
+                                <span class="text-sm font-medium">إدارة الشركات</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- إدارة المواقع -->
+                    <div class="settings-card fade-in cursor-pointer" onclick="showSection('locations')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">📍</div>
+                                <h3 class="text-xl font-bold mb-2">إدارة المواقع</h3>
+                                <p class="text-gray-300 text-sm mb-4">إدارة المواقع الجغرافية ومناطق التوصيل</p>
+                                <div class="flex items-center gap-4 text-sm">
+                                    <span class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full">12 موقع</span>
+                                    <span class="bg-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full">متاحة</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-cyan-300 mt-4">
+                                <span class="text-sm font-medium">إدارة المواقع</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم إدارة المخزن -->
+            <div id="warehouseSection" class="hidden">
+                <div class="form-section fade-in">
+                    <div class="section-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <h2 class="section-title">إدارة المخزن</h2>
+                        <button onclick="openAddWarehouseModal()" class="btn btn-primary mr-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            إضافة مخزن جديد
+                        </button>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="overflow-x-auto">
+                            <table class="table w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="text-right font-bold text-gray-700">اسم المخزن</th>
+                                        <th class="text-right font-bold text-gray-700">الموقع</th>
+                                        <th class="text-right font-bold text-gray-700">السعة</th>
+                                        <th class="text-right font-bold text-gray-700">المستخدم</th>
+                                        <th class="text-right font-bold text-gray-700">الحالة</th>
+                                        <th class="text-right font-bold text-gray-700">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">المخزن الرئيسي</td>
+                                        <td>الرياض - حي الملك فهد</td>
+                                        <td>1000 متر مربع</td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-2 bg-green-500 rounded-full"></div>
+                                                <span>85%</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">مخزن الشرق</td>
+                                        <td>الدمام - حي الفيصلية</td>
+                                        <td>750 متر مربع</td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-2 bg-yellow-500 rounded-full"></div>
+                                                <span>65%</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">مخزن الغرب</td>
+                                        <td>جدة - حي الروضة</td>
+                                        <td>500 متر مربع</td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-2 bg-red-500 rounded-full"></div>
+                                                <span>95%</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-warning">يحتاج صيانة</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم إدارة الموظفين -->
+            <div id="employeesSection" class="hidden">
+                <div class="form-section fade-in">
+                    <div class="section-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                        </svg>
+                        <h2 class="section-title">إدارة الموظفين</h2>
+                        <button onclick="openAddEmployeeModal()" class="btn btn-success mr-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            إضافة موظف جديد
+                        </button>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="overflow-x-auto">
+                            <table class="table w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="text-right font-bold text-gray-700">الاسم</th>
+                                        <th class="text-right font-bold text-gray-700">المنصب</th>
+                                        <th class="text-right font-bold text-gray-700">القسم</th>
+                                        <th class="text-right font-bold text-gray-700">رقم الهاتف</th>
+                                        <th class="text-right font-bold text-gray-700">تاريخ التوظيف</th>
+                                        <th class="text-right font-bold text-gray-700">الحالة</th>
+                                        <th class="text-right font-bold text-gray-700">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row">
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                                    أ</div>
+                                                <span class="font-semibold">أحمد محمد علي</span>
+                                            </div>
+                                        </td>
+                                        <td>مدير المخزن</td>
+                                        <td>المخازن</td>
+                                        <td>+966501234567</td>
+                                        <td>2023-01-15</td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                                                    س</div>
+                                                <span class="font-semibold">سارة أحمد محمد</span>
+                                            </div>
+                                        </td>
+                                        <td>مندوبة توصيل</td>
+                                        <td>التوصيل</td>
+                                        <td>+966507654321</td>
+                                        <td>2023-03-20</td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                                                    م</div>
+                                                <span class="font-semibold">محمود علي حسن</span>
+                                            </div>
+                                        </td>
+                                        <td>محاسب</td>
+                                        <td>المالية</td>
+                                        <td>+966509876543</td>
+                                        <td>2022-11-10</td>
+                                        <td><span class="badge badge-warning">إجازة</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم إدارة الشركات -->
+            <div id="companiesSection" class="hidden">
+                <div class="form-section fade-in">
+                    <div class="section-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-orange-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <h2 class="section-title">إدارة الشركات</h2>
+                        <button onclick="openAddCompanyModal()" class="btn btn-warning mr-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            إضافة شركة جديدة
+                        </button>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="overflow-x-auto">
+                            <table class="table w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="text-right font-bold text-gray-700">اسم الشركة</th>
+                                        <th class="text-right font-bold text-gray-700">رقم الشركة</th>
+                                        <th class="text-right font-bold text-gray-700">نوع النشاط</th>
+                                        <th class="text-right font-bold text-gray-700">عدد الشحنات</th>
+                                        <th class="text-right font-bold text-gray-700">آخر شحنة</th>
+                                        <th class="text-right font-bold text-gray-700">الحالة</th>
+                                        <th class="text-right font-bold text-gray-700">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">شركة التقنية المتقدمة</td>
+                                        <td>COMP001</td>
+                                        <td>تقنية المعلومات</td>
+                                        <td>
+                                            <span class="badge badge-info">234 شحنة</span>
+                                        </td>
+                                        <td>2024-01-15</td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">مؤسسة الإبداع التجارية</td>
+                                        <td>COMP002</td>
+                                        <td>تجارة عامة</td>
+                                        <td>
+                                            <span class="badge badge-info">198 شحنة</span>
+                                        </td>
+                                        <td>2024-01-12</td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">شركة المستقبل للخدمات</td>
+                                        <td>COMP003</td>
+                                        <td>خدمات لوجستية</td>
+                                        <td>
+                                            <span class="badge badge-info">156 شحنة</span>
+                                        </td>
+                                        <td>2024-01-08</td>
+                                        <td><span class="badge badge-warning">معلق</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم إدارة المواقع -->
+            <div id="locationsSection" class="hidden">
+                <div class="form-section fade-in">
+                    <div class="section-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-cyan-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <h2 class="section-title">إدارة المواقع</h2>
+                        <button onclick="openAddLocationModal()" class="btn btn-info mr-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            إضافة موقع جديد
+                        </button>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="overflow-x-auto">
+                            <table class="table w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="text-right font-bold text-gray-700">اسم الموقع</th>
+                                        <th class="text-right font-bold text-gray-700">المدينة</th>
+                                        <th class="text-right font-bold text-gray-700">المنطقة</th>
+                                        <th class="text-right font-bold text-gray-700">عدد المندوبين</th>
+                                        <th class="text-right font-bold text-gray-700">التغطية</th>
+                                        <th class="text-right font-bold text-gray-700">الحالة</th>
+                                        <th class="text-right font-bold text-gray-700">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">منطقة الملك فهد</td>
+                                        <td>الرياض</td>
+                                        <td>الوسط</td>
+                                        <td>
+                                            <span class="badge badge-primary">12 مندوب</span>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-2 bg-green-500 rounded-full"></div>
+                                                <span>100%</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">منطقة الفيصلية</td>
+                                        <td>الدمام</td>
+                                        <td>الشرق</td>
+                                        <td>
+                                            <span class="badge badge-primary">8 مندوب</span>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-2 bg-yellow-500 rounded-full"></div>
+                                                <span>85%</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-success">نشط</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="font-semibold">منطقة الروضة</td>
+                                        <td>جدة</td>
+                                        <td>الغرب</td>
+                                        <td>
+                                            <span class="badge badge-primary">6 مندوب</span>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-2 bg-red-500 rounded-full"></div>
+                                                <span>60%</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge badge-warning">يحتاج تطوير</span></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <button class="action-btn btn-view">عرض</button>
+                                                <button class="action-btn btn-edit">تعديل</button>
+                                                <button class="action-btn btn-delete">حذف</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let sidebarOpen = false;
+
+        // عناصر DOM
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        // إدارة الشريط الجانبي
+        function openSidebarFunc() {
+            sidebar.classList.remove('sidebar-closed');
+            sidebar.classList.add('sidebar-open');
+            mainContent.style.marginRight = '320px';
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            mainContent.style.marginRight = '0';
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        }
+
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            } else {
+                openSidebarFunc();
+            }
+        }
+
+        // ربط أزرار التحكم
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', () => {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+
+        // دالة تبديل القائمة الفرعية
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // عرض قسم معين
+        function showSection(sectionName) {
+            // إخفاء جميع الأقسام
+            const sections = ['warehouseSection', 'employeesSection', 'companiesSection', 'locationsSection'];
+            sections.forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+
+            // عرض القسم المطلوب
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+
+            // التمرير إلى القسم
+            document.getElementById(sectionName + 'Section').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // فتح نوافذ الإضافة
+        function openAddWarehouseModal() {
+            alert('سيتم فتح نافذة إضافة مخزن جديد');
+        }
+
+        function openAddEmployeeModal() {
+            alert('سيتم فتح نافذة إضافة موظف جديد');
+        }
+
+        function openAddCompanyModal() {
+            alert('سيتم فتح نافذة إضافة شركة جديدة');
+        }
+
+        function openAddLocationModal() {
+            alert('سيتم فتح نافذة إضافة موقع جديد');
+        }
+
+        // تحديث الوقت الحالي
+        function updateLastUpdate() {
+            const now = new Date();
+            const timeString = now.toLocaleString('ar-SA', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdate').textContent = timeString;
+        }
+
+        // إعداد الأحداث عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebarToggle.addEventListener('click', toggleSidebar);
+
+            // تحديث الوقت
+            updateLastUpdate();
+            setInterval(updateLastUpdate, 60000); // تحديث كل دقيقة
+
+            // فتح قسم الإعدادات افتراضياً
+            toggleSubmenu('settings');
+        });
+    </script>
+</body>
+
+</html>

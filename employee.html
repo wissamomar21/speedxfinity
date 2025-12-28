@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الموظفين - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+    <!-- الشريط العلوي -->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center gap-6 ml-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li>
+                        <a href="setting.html" class="text-gray-600 hover:text-gray-800 font-semibold">الاعدادات</a>
+                    </li>
+                    <li class="text-blue-600 font-bold">الموظفين</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- عنوان الصفحة -->
+            <div class="flex items-center justify-between mb-8">
+                <button onclick="openAddEmployeeModal()" class="btn btn-success btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    إضافة موظف جديد
+                </button>
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-2">الموظفين</h1>
+                    <p class="text-white/80 text-lg">إدارة وتتبع الموظفين والمهام</p>
+                </div>
+            </div>
+
+            <!-- بطاقات الإحصائيات -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <!-- إجمالي الموظفين -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">👥</div>
+                    <h3 class="text-lg font-bold mb-2">إجمالي الموظفين</h3>
+                    <p class="text-3xl font-bold mb-1" id="totalEmployees">0</p>
+                    <p class="text-white/80 text-sm">موظف نشط</p>
+                </div>
+
+                <!-- الموظفين الحاضرين -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">✅</div>
+                    <h3 class="text-lg font-bold mb-2">الحاضرين اليوم</h3>
+                    <p class="text-3xl font-bold mb-1" id="presentEmployees">0</p>
+                    <p class="text-white/80 text-sm">موظف حاضر</p>
+                </div>
+
+                <!-- الموظفين الغائبين -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">❌</div>
+                    <h3 class="text-lg font-bold mb-2">الغائبين اليوم</h3>
+                    <p class="text-3xl font-bold mb-1" id="absentEmployees">0</p>
+                    <p class="text-white/80 text-sm">موظف غائب</p>
+                </div>
+
+                <!-- الأقسام -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">🏢</div>
+                    <h3 class="text-lg font-bold mb-2">الأقسام</h3>
+                    <p class="text-3xl font-bold mb-1">0</p>
+                    <p class="text-white/80 text-sm">قسم نشط</p>
+                </div>
+            </div>
+
+            <!-- جدول الموظفين -->
+            <div class="card glass-effect shadow-2xl rounded-2xl overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="p-6 border-b border-gray-200">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                            👥 قائمة الموظفين
+                        </h2>
+                    </div>
+
+                    <!-- خانة البحث -->
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="form-control w-full max-w-md">
+                            <label class="label">
+                                <span class="label-text font-semibold text-black">البحث عن موظف</span>
+                            </label>
+                            <input type="text" id="searchInput" placeholder="ابحث بالاسم..."
+                                class="input input-bordered w-full" onkeyup="searchEmployees()" />
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="table w-full bg-white" id="employeesTable">
+                            <thead>
+                                <tr class="bg-white border-b border-gray-200">
+                                    <th class="text-right font-bold text-gray-700">الاسم</th>
+                                    <th class="text-right font-bold text-gray-700">المنصب</th>
+                                    <th class="text-right font-bold text-gray-700">القسم</th>
+                                    <th class="text-right font-bold text-gray-700">الحالة</th>
+                                    <th class="text-right font-bold text-gray-700">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeesTableBody">
+                                <tr class="text-center">
+                                    <td colspan="5" class="py-8 text-gray-500">
+                                        <div class="flex flex-col items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                            <p class="text-lg font-medium">لا يوجد موظفين حالياً</p>
+                                            <p class="text-sm">قم بإضافة موظف جديد للبدء</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal إضافة موظف جديد -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-box w-11/12 max-w-4xl h-auto max-h-[90vh] overflow-y-auto p-0 rounded-3xl bg-white">
+            <!-- رأس الـ Modal -->
+            <div class="sticky top-0 z-10 bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        إضافة موظف جديد
+                    </h3>
+                    <button onclick="closeAddEmployeeModal()"
+                        class="btn btn-ghost btn-circle text-white hover:bg-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- محتوى الـ Modal -->
+            <form id="addEmployeeForm" class="p-6 space-y-6">
+                <!-- المعلومات الشخصية -->
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        المعلومات الشخصية
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">الاسم الكامل *</span>
+                            </label>
+                            <input type="text" id="employeeName" name="employeeName" placeholder="أدخل الاسم الكامل"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">رقم الهوية *</span>
+                            </label>
+                            <input type="text" id="employeeId" name="employeeId" placeholder="أدخل رقم الهوية"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">رقم الهاتف *</span>
+                            </label>
+                            <input type="tel" id="employeePhone" name="employeePhone" placeholder="أدخل رقم الهاتف"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">البريد الإلكتروني</span>
+                            </label>
+                            <input type="email" id="employeeEmail" name="employeeEmail"
+                                placeholder="أدخل البريد الإلكتروني" class="input input-bordered w-full" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- معلومات العمل -->
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z" />
+                        </svg>
+                        معلومات العمل
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">المنصب *</span>
+                            </label>
+                            <select id="employeePosition" name="employeePosition" class="select select-bordered w-full"
+                                required>
+                                <option value="">اختر المنصب</option>
+                                <option value="مدير">مدير</option>
+                                <option value="مشرف">مشرف</option>
+                                <option value="موظف">موظف</option>
+                                <option value="عامل">عامل</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">القسم *</span>
+                            </label>
+                            <select id="employeeDepartment" name="employeeDepartment"
+                                class="select select-bordered w-full" required>
+                                <option value="">اختر القسم</option>
+                                <option value="المخازن">المخازن</option>
+                                <option value="الشحن">الشحن</option>
+                                <option value="المحاسبة">المحاسبة</option>
+                                <option value="خدمة العملاء">خدمة العملاء</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">تاريخ التوظيف *</span>
+                            </label>
+                            <input type="date" id="employeeHireDate" name="employeeHireDate"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">الراتب الأساسي</span>
+                            </label>
+                            <input type="number" id="employeeSalary" name="employeeSalary" placeholder="أدخل الراتب"
+                                class="input input-bordered w-full" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- العنوان -->
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        العنوان
+                    </h4>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">العنوان الكامل</span>
+                        </label>
+                        <textarea id="employeeAddress" name="employeeAddress" placeholder="أدخل العنوان الكامل"
+                            class="textarea textarea-bordered h-24 resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- أزرار الإجراءات -->
+                <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeAddEmployeeModal()" class="btn btn-outline btn-lg">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        إضافة الموظف
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal عرض الموظف -->
+<div id="viewEmployeeModal" class="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-box w-11/12 max-w-3xl h-auto max-h-[90vh] overflow-y-auto p-0 rounded-3xl bg-white">
+    <!-- رأس المودال -->
+    <div class="sticky top-0 z-10 bg-gradient-to-r from-blue-500 to-purple-500 p-6 rounded-t-3xl">
+      <div class="flex items-center justify-between">
+        <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 
+              7.523 5 12 5c4.478 0 8.268 2.943 
+              9.542 7-1.274 4.057-5.064 7-9.542 
+              7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+          تفاصيل الموظف
+        </h3>
+        <button onclick="closeViewEmployeeModal()" 
+                class="btn btn-ghost btn-circle text-white hover:bg-white/20">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- المحتوى -->
+    <div class="p-6 space-y-4 text-gray-800">
+      <p><strong>الاسم:</strong> <span id="viewEmployeeName"></span></p>
+      <p><strong>رقم الهوية:</strong> <span id="viewEmployeeId"></span></p>
+      <p><strong>رقم الهاتف:</strong> <span id="viewEmployeePhone"></span></p>
+      <p><strong>البريد الإلكتروني:</strong> <span id="viewEmployeeEmail"></span></p>
+      <p><strong>المنصب:</strong> <span id="viewEmployeePosition"></span></p>
+      <p><strong>القسم:</strong> <span id="viewEmployeeDepartment"></span></p>
+      <p><strong>تاريخ التوظيف:</strong> <span id="viewEmployeeHireDate"></span></p>
+      <p><strong>الراتب:</strong> <span id="viewEmployeeSalary"></span></p>
+      <p><strong>العنوان:</strong> <span id="viewEmployeeAddress"></span></p>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Modal تعديل الموظف -->
+    <div id="editEmployeeModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-box w-11/12 max-w-4xl h-auto max-h-[90vh] overflow-y-auto p-0 rounded-3xl bg-white">
+            <!-- رأس الـ Modal -->
+            <div class="sticky top-0 z-10 bg-gradient-to-r from-orange-600 to-red-600 p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        تعديل بيانات الموظف
+                    </h3>
+                    <button onclick="closeEditEmployeeModal()"
+                        class="btn btn-ghost btn-circle text-white hover:bg-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- محتوى الـ Modal -->
+            <form id="editEmployeeForm" class="p-6 space-y-6">
+                <input type="hidden" id="editEmployeeIndex" />
+                
+                <!-- المعلومات الشخصية -->
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        المعلومات الشخصية
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">الاسم الكامل *</span>
+                            </label>
+                            <input type="text" id="editEmployeeName" name="employeeName" placeholder="أدخل الاسم الكامل"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">رقم الهوية *</span>
+                            </label>
+                            <input type="text" id="editEmployeeId" name="employeeId" placeholder="أدخل رقم الهوية"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">رقم الهاتف *</span>
+                            </label>
+                            <input type="tel" id="editEmployeePhone" name="employeePhone" placeholder="أدخل رقم الهاتف"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">البريد الإلكتروني</span>
+                            </label>
+                            <input type="email" id="editEmployeeEmail" name="employeeEmail"
+                                placeholder="أدخل البريد الإلكتروني" class="input input-bordered w-full" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- معلومات العمل -->
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z" />
+                        </svg>
+                        معلومات العمل
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">المنصب *</span>
+                            </label>
+                            <select id="editEmployeePosition" name="employeePosition" class="select select-bordered w-full"
+                                required>
+                                <option value="">اختر المنصب</option>
+                                <option value="مدير">مدير</option>
+                                <option value="مشرف">مشرف</option>
+                                <option value="موظف">موظف</option>
+                                <option value="عامل">عامل</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">القسم *</span>
+                            </label>
+                            <select id="editEmployeeDepartment" name="employeeDepartment"
+                                class="select select-bordered w-full" required>
+                                <option value="">اختر القسم</option>
+                                <option value="المخازن">المخازن</option>
+                                <option value="الشحن">الشحن</option>
+                                <option value="المحاسبة">المحاسبة</option>
+                                <option value="خدمة العملاء">خدمة العملاء</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">تاريخ التوظيف *</span>
+                            </label>
+                            <input type="date" id="editEmployeeHireDate" name="employeeHireDate"
+                                class="input input-bordered w-full" required />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold text-gray-700">الراتب الأساسي</span>
+                            </label>
+                            <input type="number" id="editEmployeeSalary" name="employeeSalary" placeholder="أدخل الراتب"
+                                class="input input-bordered w-full" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- العنوان -->
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        العنوان
+                    </h4>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">العنوان الكامل</span>
+                        </label>
+                        <textarea id="editEmployeeAddress" name="employeeAddress" placeholder="أدخل العنوان الكامل"
+                            class="textarea textarea-bordered h-24 resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- أزرار الإجراءات -->
+                <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeEditEmployeeModal()" class="btn btn-outline btn-lg">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-warning btn-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        حفظ التعديلات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm bg-blue-600 text-white rounded-lg mb-1">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+  <script>
+  let sidebarOpen = false;
+  let employees = [];
+
+  // عناصر DOM
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('mainContent');
+  const overlay = document.getElementById('overlay');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const closeSidebar = document.getElementById('closeSidebar');
+
+  // إدارة الشريط الجانبي
+  function openSidebarFunc() {
+    sidebar.classList.remove('sidebar-closed');
+    sidebar.classList.add('sidebar-open');
+    mainContent.style.marginRight = '320px';
+    overlay.classList.remove('hidden');
+    sidebarOpen = true;
+  }
+
+  function closeSidebarFunc() {
+    sidebar.classList.remove('sidebar-open');
+    sidebar.classList.add('sidebar-closed');
+    mainContent.style.marginRight = '0';
+    overlay.classList.add('hidden');
+    sidebarOpen = false;
+  }
+
+  function toggleSidebar() {
+    if (sidebarOpen) {
+      closeSidebarFunc();
+    } else {
+      openSidebarFunc();
+    }
+  }
+
+  // ربط أزرار التحكم
+  sidebarToggle.addEventListener('click', toggleSidebar);
+  closeSidebar.addEventListener('click', closeSidebarFunc);
+  overlay.addEventListener('click', () => {
+    if (sidebarOpen) {
+      closeSidebarFunc();
+    }
+  });
+
+  // دالة تبديل القائمة الفرعية
+  function toggleSubmenu(menuId) {
+    const submenu = document.getElementById(menuId + '-submenu');
+    const arrow = document.getElementById(menuId + '-arrow');
+
+    submenu.classList.toggle('open');
+    arrow.classList.toggle('rotate-180');
+  }
+
+  // دوال إدارة modal الإضافة
+  function openAddEmployeeModal() {
+    document.getElementById('addEmployeeModal').classList.add('modal-open');
+  }
+
+  function closeAddEmployeeModal() {
+    document.getElementById('addEmployeeModal').classList.remove('modal-open');
+    document.getElementById('addEmployeeForm').reset();
+  }
+
+  // دوال إدارة modal التعديل
+  function openEditEmployeeModal(index) {
+    const employee = employees[index];
+
+    // ملء الحقول بالبيانات الحالية
+    document.getElementById('editEmployeeIndex').value = index;
+    document.getElementById('editEmployeeName').value = employee.name;
+    document.getElementById('editEmployeeId').value = employee.id;
+    document.getElementById('editEmployeePhone').value = employee.phone;
+    document.getElementById('editEmployeeEmail').value = employee.email || '';
+    document.getElementById('editEmployeePosition').value = employee.position;
+    document.getElementById('editEmployeeDepartment').value = employee.department;
+    document.getElementById('editEmployeeHireDate').value = employee.hireDate;
+    document.getElementById('editEmployeeSalary').value = employee.salary || '';
+    document.getElementById('editEmployeeAddress').value = employee.address || '';
+
+    document.getElementById('editEmployeeModal').classList.add('modal-open');
+  }
+
+  function closeEditEmployeeModal() {
+    document.getElementById('editEmployeeModal').classList.remove('modal-open');
+    document.getElementById('editEmployeeForm').reset();
+  }
+
+  function addEmployee(employeeData) {
+    employees.push(employeeData);
+    updateEmployeesTable();
+    updateStats();
+  }
+
+  function editEmployee(index, employeeData) {
+    employees[index] = employeeData;
+    updateEmployeesTable();
+    updateStats();
+  }
+
+  function updateEmployeesTable() {
+    const tableBody = document.getElementById('employeesTableBody');
+
+    if (employees.length === 0) {
+      showNoEmployeesMessage();
+      return;
+    }
+
+    tableBody.innerHTML = employees
+      .map(
+        (employee, index) => `
+              <tr class="hover:bg-gray-50 transition-colors duration-200">
+                  <td class="font-semibold text-gray-800">${employee.name}</td>
+                  <td class="text-gray-600">${employee.position}</td>
+                  <td class="text-gray-600">${employee.department}</td>
+                  <td>
+                      <span class="badge badge-success text-white">نشط</span>
+                  </td>
+                  <td>
+                      <div class="flex gap-2">
+                          <button onclick="viewEmployee(${index})" class="btn btn-sm btn-info text-white">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              عرض
+                          </button>
+                          <button onclick="openEditEmployeeModal(${index})" class="btn btn-sm btn-warning text-white">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                              تعديل
+                          </button>
+                      </div>
+                  </td>
+              </tr>
+          `
+      )
+      .join('');
+  }
+
+  function updateStats() {
+    document.getElementById('totalEmployees').textContent = employees.length;
+    document.getElementById('presentEmployees').textContent = employees.length;
+    document.getElementById('absentEmployees').textContent = '0';
+  }
+
+  // إعداد الأحداث
+  document.addEventListener('DOMContentLoaded', function () {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    sidebarToggle.addEventListener('click', toggleSidebar);
+
+    // فتح قائمة الإعدادات افتراضياً
+    toggleSubmenu('settings');
+
+    // معالجة إرسال نموذج الإضافة
+    document.getElementById('addEmployeeForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const employeeData = {
+        name: formData.get('employeeName'),
+        id: formData.get('employeeId'),
+        phone: formData.get('employeePhone'),
+        email: formData.get('employeeEmail'),
+        position: formData.get('employeePosition'),
+        department: formData.get('employeeDepartment'),
+        hireDate: formData.get('employeeHireDate'),
+        salary: formData.get('employeeSalary'),
+        address: formData.get('employeeAddress'),
+      };
+
+      addEmployee(employeeData);
+      closeAddEmployeeModal();
+
+      // إظهار رسالة نجاح
+      alert('تم إضافة الموظف بنجاح!');
+    });
+
+    // معالجة إرسال نموذج التعديل
+    document.getElementById('editEmployeeForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const index = parseInt(document.getElementById('editEmployeeIndex').value);
+      const employeeData = {
+        name: formData.get('employeeName'),
+        id: formData.get('employeeId'),
+        phone: formData.get('employeePhone'),
+        email: formData.get('employeeEmail'),
+        position: formData.get('employeePosition'),
+        department: formData.get('employeeDepartment'),
+        hireDate: formData.get('employeeHireDate'),
+        salary: formData.get('employeeSalary'),
+        address: formData.get('employeeAddress'),
+      };
+
+      editEmployee(index, employeeData);
+      closeEditEmployeeModal();
+
+      // إظهار رسالة نجاح
+      alert('تم تحديث بيانات الموظف بنجاح!');
+    });
+  });
+
+  // إغلاق النماذج عند النقر خارجها
+  document.getElementById('addEmployeeModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+      closeAddEmployeeModal();
+    }
+  });
+
+  document.getElementById('editEmployeeModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+      closeEditEmployeeModal();
+    }
+  });
+
+  // ✅ دالة عرض الموظف
+  function viewEmployee(index) {
+    const employee = employees[index];
+
+    document.getElementById('viewEmployeeName').textContent = employee.name;
+    document.getElementById('viewEmployeeId').textContent = employee.id;
+    document.getElementById('viewEmployeePhone').textContent = employee.phone;
+    document.getElementById('viewEmployeeEmail').textContent = employee.email || '-';
+    document.getElementById('viewEmployeePosition').textContent = employee.position;
+    document.getElementById('viewEmployeeDepartment').textContent = employee.department;
+    document.getElementById('viewEmployeeHireDate').textContent = employee.hireDate;
+    document.getElementById('viewEmployeeSalary').textContent = employee.salary || '-';
+    document.getElementById('viewEmployeeAddress').textContent = employee.address || '-';
+
+    document.getElementById('viewEmployeeModal').classList.add('modal-open');
+  }
+
+  function closeViewEmployeeModal() {
+    document.getElementById('viewEmployeeModal').classList.remove('modal-open');
+  }
+
+  function searchEmployees() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('employeesTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+      const nameCell = rows[i].getElementsByTagName('td')[0];
+      if (nameCell) {
+        const nameText = nameCell.textContent || nameCell.innerText;
+        if (nameText.toLowerCase().indexOf(filter) > -1) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    }
+  }
+
+  // تحديث الإحصائيات في بداية التحميل
+  updateStats();
+
+  // إضافة رسالة "لا يوجد موظفين" في البداية
+  showNoEmployeesMessage();
+
+  function showNoEmployeesMessage() {
+    const tableBody = document.getElementById('employeesTableBody');
+    if (employees.length === 0) {
+      tableBody.innerHTML = `
+                  <tr class="text-center">
+                      <td colspan="5" class="py-8 text-gray-500">
+                          <div class="flex flex-col items-center gap-3">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              </svg>
+                              <p class="text-lg font-medium">لا يوجد موظفين حالياً</p>
+                              <p class="text-sm">قم بإضافة موظف جديد للبدء</p>
+                          </div>
+                      </td>
+                  </tr>
+              `;
+    }
+  }
+</script>
+
+</body>
+
+</html>

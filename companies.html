@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>الشركات - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-custom {
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+
+    <!-- الشريط العلوى-->
+    <!-- الشريط العلوي -->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center gap-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li>
+                        <a href="setting.html" class="text-gray-600 hover:text-gray-800 font-semibold">الاعدادات</a>
+                    </li>
+                    <li class="text-blue-600 font-bold"> الشركات</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<!-- المحتوى الرئيسي -->
+<div id="mainContent" class="pt-20 content-shift min-h-screen">
+    <div class="p-6 max-w-7xl mx-auto">
+        <!-- عنوان الصفحة مع زر الإضافة -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                🏢 بيانات الشركات
+            </h2>
+            <button id="addCompanyBtn"
+                class="btn btn-success shadow-lg hover:shadow-xl transition-all duration-300 w-full md:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                إضافة شركة جديدة
+            </button>
+        </div>
+
+        <!-- شريط البحث -->
+        <div class="mb-6 max-w-md mx-auto">
+            <div class="relative">
+                <input type="text" placeholder="ابحث عن الشركات..."
+                    class="input input-bordered w-full pr-12 text-right bg-white/90 backdrop-blur-sm"
+                    id="searchInput" />
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- البطاقات -->
+        <div class="bg-white/95 backdrop-blur-md p-6 rounded-xl shadow-lg">
+            <div id="companiesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- بطاقة شركة 1 -->
+                <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                    data-company='{"id":1,"code":"COM001","name":"شركة النقل السريع","phone":"01234567890","shipping":25.50,"completedShipments":150,"activeShipments":8,"status":"نشط","systemName":"FastShip Pro"}'>
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-lg mb-3">
+                            <span class="text-blue-600">كود:</span> COM001
+                        </h2>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold text-gray-700">الاسم:</span> شركة النقل السريع</p>
+                            <p><span class="font-semibold text-gray-700">الهاتف:</span> 01234567890</p>
+                            <p><span class="font-semibold text-gray-700">الشحن:</span> 25.50 جنيه</p>
+                        </div>
+                        <div class="card-actions justify-end mt-4 gap-2">
+                            <button class="btn btn-info btn-sm details-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                التفاصيل
+                            </button>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                تعديل
+                            </button>
+                            <button class="btn btn-error btn-sm delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة شركة 2 -->
+                <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                    data-company='{"id":2,"code":"COM002","name":"الشركة المتحدة للخدمات","phone":"01987654321","shipping":35.00,"completedShipments":89,"activeShipments":12,"status":"نشط","systemName":"UniServ System"}'>
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-lg mb-3">
+                            <span class="text-blue-600">كود:</span> COM002
+                        </h2>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold text-gray-700">الاسم:</span> الشركة المتحدة للخدمات
+                            </p>
+                            <p><span class="font-semibold text-gray-700">الهاتف:</span> 01987654321</p>
+                            <p><span class="font-semibold text-gray-700">الشحن:</span> 35.00 جنيه</p>
+                        </div>
+                        <div class="card-actions justify-end mt-4 gap-2">
+                            <button class="btn btn-info btn-sm details-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                التفاصيل
+                            </button>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                تعديل
+                            </button>
+                            <button class="btn btn-error btn-sm delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة شركة 3 -->
+                <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                    data-company='{"id":3,"code":"COM003","name":"شركة البرق للتوصيل","phone":"01567890123","shipping":18.75,"completedShipments":203,"activeShipments":5,"status":"نشط","systemName":"Lightning Delivery"}'>
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-lg mb-3">
+                            <span class="text-blue-600">كود:</span> COM003
+                        </h2>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold text-gray-700">الاسم:</span> شركة البرق للتوصيل</p>
+                            <p><span class="font-semibold text-gray-700">الهاتف:</span> 01567890123</p>
+                            <p><span class="font-semibold text-gray-700">الشحن:</span> 18.75 جنيه</p>
+                        </div>
+                        <div class="card-actions justify-end mt-4 gap-2">
+                            <button class="btn btn-info btn-sm details-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                التفاصيل
+                            </button>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                تعديل
+                            </button>
+                            <button class="btn btn-error btn-sm delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة شركة 4 -->
+                <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                    data-company='{"id":4,"code":"COM004","name":"الشركة الذهبية","phone":"01456789012","shipping":42.25,"completedShipments":67,"activeShipments":0,"status":"غير نشط","systemName":"Golden Express"}'>
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-lg mb-3">
+                            <span class="text-blue-600">كود:</span> COM004
+                        </h2>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold text-gray-700">الاسم:</span> الشركة الذهبية</p>
+                            <p><span class="font-semibold text-gray-700">الهاتف:</span> 01456789012</p>
+                            <p><span class="font-semibold text-gray-700">الشحن:</span> 42.25 جنيه</p>
+                        </div>
+                        <div class="card-actions justify-end mt-4 gap-2">
+                            <button class="btn btn-info btn-sm details-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                التفاصيل
+                            </button>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                تعديل
+                            </button>
+                            <button class="btn btn-error btn-sm delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة شركة 5 -->
+                <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                    data-company='{"id":5,"code":"COM005","name":"مجموعة النجم للشحن","phone":"01345678901","shipping":29.90,"completedShipments":134,"activeShipments":7,"status":"نشط","systemName":"Star Shipping Group"}'>
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-lg mb-3">
+                            <span class="text-blue-600">كود:</span> COM005
+                        </h2>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold text-gray-700">الاسم:</span> مجموعة النجم للشحن</p>
+                            <p><span class="font-semibold text-gray-700">الهاتف:</span> 01345678901</p>
+                            <p><span class="font-semibold text-gray-700">الشحن:</span> 29.90 جنيه</p>
+                        </div>
+                        <div class="card-actions justify-end mt-4 gap-2">
+                            <button class="btn btn-info btn-sm details-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                التفاصيل
+                            </button>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                تعديل
+                            </button>
+                            <button class="btn btn-error btn-sm delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال التفاصيل -->
+<input type="checkbox" id="detailsModalToggle" class="modal-toggle" />
+<div class="modal">
+    <div class="modal-box max-w-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-xl">تفاصيل الشركة</h3>
+            <label for="detailsModalToggle" class="btn btn-sm btn-circle btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
+            <div class="space-y-4">
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">الكود:</span>
+                    </label>
+                    <input type="text" id="detailsCode" class="input input-bordered w-full" readonly />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">اسم الشركة:</span>
+                    </label>
+                    <input type="text" id="detailsName" class="input input-bordered w-full" readonly />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">رقم الهاتف:</span>
+                    </label>
+                    <input type="text" id="detailsPhone" class="input input-bordered w-full" readonly />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">سعر الشحن:</span>
+                    </label>
+                    <input type="text" id="detailsShipping" class="input input-bordered w-full" readonly />
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">عدد الشحنات المنتهية:</span>
+                    </label>
+                    <input type="text" id="detailsCompleted" class="input input-bordered w-full" readonly />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">عدد الشحنات قيد التشغيل:</span>
+                    </label>
+                    <input type="text" id="detailsActive" class="input input-bordered w-full" readonly />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">الحالة:</span>
+                    </label>
+                    <div id="detailsStatus" class="badge badge-lg w-full py-3"></div>
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold text-gray-700">اسم النظام:</span>
+                    </label>
+                    <input type="text" id="detailsSystemName" class="input input-bordered w-full" readonly />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال إضافة شركة جديدة -->
+<input type="checkbox" id="addCompanyModalToggle" class="modal-toggle" />
+<div class="modal">
+    <div class="modal-box max-w-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-xl">إضافة شركة جديدة</h3>
+            <label for="addCompanyModalToggle" class="btn btn-sm btn-circle btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </label>
+        </div>
+
+        <form id="addCompanyForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">الكود *</span>
+                    </label>
+                    <input type="text" id="addCode" class="input input-bordered w-full" placeholder="أدخل كود الشركة"
+                        required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">اسم الشركة *</span>
+                    </label>
+                    <input type="text" id="addName" class="input input-bordered w-full" placeholder="أدخل اسم الشركة"
+                        required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">رقم الهاتف *</span>
+                    </label>
+                    <input type="tel" id="addPhone" class="input input-bordered w-full" placeholder="أدخل رقم الهاتف"
+                        required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">سعر الشحن (جنيه) *</span>
+                    </label>
+                    <input type="number" step="0.01" id="addShipping" class="input input-bordered w-full"
+                        placeholder="أدخل سعر الشحن" required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">اسم النظام</span>
+                    </label>
+                    <input type="text" id="addSystemName" class="input input-bordered w-full"
+                        placeholder="أدخل اسم النظام" />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">الحالة</span>
+                    </label>
+                    <select id="addStatus" class="select select-bordered w-full">
+                        <option value="نشط">نشط</option>
+                        <option value="غير نشط">غير نشط</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-action">
+                <button type="submit" class="btn btn-primary">إضافة الشركة</button>
+                <label for="addCompanyModalToggle" class="btn btn-ghost">إلغاء</label>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- مودال التعديل -->
+<input type="checkbox" id="editCompanyModalToggle" class="modal-toggle" />
+<div class="modal">
+    <div class="modal-box max-w-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-xl">تعديل بيانات الشركة</h3>
+            <label for="editCompanyModalToggle" class="btn btn-sm btn-circle btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </label>
+        </div>
+
+        <form id="editCompanyForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">الكود *</span>
+                    </label>
+                    <input type="text" id="editCode" class="input input-bordered w-full" required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">اسم الشركة *</span>
+                    </label>
+                    <input type="text" id="editName" class="input input-bordered w-full" required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">رقم الهاتف *</span>
+                    </label>
+                    <input type="tel" id="editPhone" class="input input-bordered w-full" required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">سعر الشحن (جنيه) *</span>
+                    </label>
+                    <input type="number" step="0.01" id="editShipping" class="input input-bordered w-full" required />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">اسم النظام</span>
+                    </label>
+                    <input type="text" id="editSystemName" class="input input-bordered w-full" />
+                </div>
+
+                <div>
+                    <label class="label">
+                        <span class="label-text font-semibold">الحالة</span>
+                    </label>
+                    <select id="editStatus" class="select select-bordered w-full">
+                        <option value="نشط">نشط</option>
+                        <option value="غير نشط">غير نشط</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-action">
+                <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                <label for="editCompanyModalToggle" class="btn btn-ghost">إلغاء</label>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- الشريط الجانبي -->
+<div id="sidebar"
+    class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+    <div class="p-6">
+        <!-- رأس الشريط الجانبي -->
+        <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                <span class="text-gray-800 font-bold text-lg">SX</span>
+            </div>
+            <div class="flex-1">
+                <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                <p class="text-sm text-gray-400">المدير العام</p>
+            </div>
+            <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- القائمة -->
+        <nav class="space-y-2">
+            <a href="homepage.html"
+                class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="font-semibold">الرئيسية</span>
+            </a>
+
+            <!-- الإعدادات مع قائمة فرعية -->
+            <div>
+                <button onclick="toggleSubmenu('settings')"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="flex-1 font-semibold">الإعدادات</span>
+                    <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="settings-submenu" class="submenu mr-8">
+                    <a href="stors.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>المخازن</span>
+                    </a>
+                    <a href="employee.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>الموظفين</span>
+                    </a>
+                    <a href="companies.html"
+                        class="flex items-center gap-3 p-3 text-sm bg-blue-600 text-white rounded-lg mb-1">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>الشركات</span>
+                    </a>
+                    <a href="locat.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>المواقع</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- الشحنات مع قائمة فرعية -->
+            <div>
+                <button onclick="toggleSubmenu('shipments')"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <span class="flex-1 font-semibold">الشحنات</span>
+                    <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="shipments-submenu" class="submenu mr-8">
+                    <a href="datarecovery.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>استيراد بيانات</span>
+                    </a>
+                    <a href="enterdelegate.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>دخول الى مندوب</span>
+                    </a>
+                    <a href="enterstore.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>دخول الى مخزن</span>
+                    </a>
+                    <a href="returns.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>المرتجعات</span>
+                    </a>
+                    <a href="datareturns.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>فواتير المرتجعات</span>
+                    </a>
+                    <a href="deliveres.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>التسليمات</span>
+                    </a>
+                    <a href="barcode.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>طباعة الباركود</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- المالية مع قائمة فرعية -->
+            <div>
+                <button onclick="toggleSubmenu('finance')"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="flex-1 font-semibold">المالية</span>
+                    <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="finance-submenu" class="submenu mr-8">
+                    <a href="exepenses.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>المصروفات</span>
+                    </a>
+                    <a href="serchin.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>بحث عن شحنه</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- الحساب -->
+            <div>
+                <button onclick="toggleSubmenu('account')"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                    </svg>
+                    <span class="flex-1 font-semibold">الحساب</span>
+                    <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="account-submenu" class="submenu mr-8">
+                    <a href="login.html"
+                        class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                        <span>تسجيل خروج</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+<div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+<!-- الفوتر -->
+<footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- القسم الأول -->
+            <div>
+                <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                <p class="text-sm leading-relaxed">
+                    منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                </p>
+            </div>
+
+            <!-- روابط سريعة -->
+            <div>
+                <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                <ul class="space-y-1">
+                    <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                    <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                    <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- خط فاصل -->
+        <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+            <p class="text-xs text-gray-400 text-center">
+                © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+            </p>
+            <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+        </div>
+    </div>
+</footer>
+<script>
+    let sidebarOpen = false;
+    let currentEditingCompany = null;
+
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const overlay = document.getElementById('overlay');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+
+    // إدارة الشريط الجانبي
+    function openSidebar() {
+        sidebar.classList.remove('sidebar-closed');
+        sidebar.classList.add('sidebar-open');
+        mainContent.style.marginRight = '320px';
+        overlay.classList.remove('hidden');
+        sidebarOpen = true;
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('sidebar-open');
+        sidebar.classList.add('sidebar-closed');
+        mainContent.style.marginRight = '0';
+        overlay.classList.add('hidden');
+        sidebarOpen = false;
+    }
+
+    function toggleSidebar() {
+        if (sidebarOpen) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    }
+
+    // ربط أزرار التحكم
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', () => {
+        if (sidebarOpen) {
+            closeSidebar();
+        }
+    });
+
+    // عند تحميل الصفحة، تأكد أن السايد بار مغلق
+    window.addEventListener('DOMContentLoaded', () => {
+        closeSidebar();
+    });
+
+    // دالة تبديل القائمة الفرعية
+    function toggleSubmenu(menuId) {
+        const submenu = document.getElementById(menuId + '-submenu');
+        const arrow = document.getElementById(menuId + '-arrow');
+
+        submenu.classList.toggle('open');
+        arrow.classList.toggle('rotate-180');
+    }
+
+    // فتح قائمة الإعدادات افتراضياً
+    toggleSubmenu('settings');
+
+    // إدارة المودالات والأزرار
+    const addCompanyBtn = document.getElementById('addCompanyBtn');
+    const addCompanyModalToggle = document.getElementById('addCompanyModalToggle');
+    const detailsModalToggle = document.getElementById('detailsModalToggle');
+    const editCompanyModalToggle = document.getElementById('editCompanyModalToggle');
+
+    // فتح مودال الإضافة
+    addCompanyBtn.addEventListener('click', () => {
+        addCompanyModalToggle.checked = true;
+    });
+
+    // إدارة أزرار البطاقات
+    document.addEventListener('click', (e) => {
+        const card = e.target.closest('.card');
+        if (!card) return;
+
+        const companyData = JSON.parse(card.getAttribute('data-company'));
+
+        if (e.target.closest('.details-btn')) {
+            showCompanyDetails(companyData);
+        } else if (e.target.closest('.edit-btn')) {
+            showEditCompany(companyData);
+        } else if (e.target.closest('.delete-btn')) {
+            deleteCompany(companyData);
+        }
+    });
+
+    // عرض تفاصيل الشركة
+    function showCompanyDetails(company) {
+        document.getElementById('detailsCode').value = company.code;
+        document.getElementById('detailsName').value = company.name;
+        document.getElementById('detailsPhone').value = company.phone;
+        document.getElementById('detailsShipping').value = company.shipping + ' جنيه';
+        document.getElementById('detailsCompleted').value = company.completedShipments;
+        document.getElementById('detailsActive').value = company.activeShipments;
+        document.getElementById('detailsSystemName').value = company.systemName;
+
+        const statusBadge = document.getElementById('detailsStatus');
+        statusBadge.textContent = company.status;
+        statusBadge.className = `badge badge-lg w-full py-3 ${company.status === 'نشط' ? 'badge-success' : 'badge-error'}`;
+
+        detailsModalToggle.checked = true;
+    }
+
+    // عرض تعديل الشركة
+    function showEditCompany(company) {
+        currentEditingCompany = company;
+        document.getElementById('editCode').value = company.code;
+        document.getElementById('editName').value = company.name;
+        document.getElementById('editPhone').value = company.phone;
+        document.getElementById('editShipping').value = company.shipping;
+        document.getElementById('editSystemName').value = company.systemName;
+        document.getElementById('editStatus').value = company.status;
+
+        editCompanyModalToggle.checked = true;
+    }
+
+    // حذف الشركة
+    function deleteCompany(company) {
+        if (confirm(`هل أنت متأكد من حذف شركة "${company.name}"؟`)) {
+            const card = document.querySelector(`[data-company*='"id":${company.id}']`);
+            if (card) {
+                card.remove();
+            }
+            alert('تم حذف الشركة بنجاح!');
+        }
+    }
+
+    // إضافة شركة جديدة
+    document.getElementById('addCompanyForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const newCompany = {
+            id: Date.now(),
+            code: document.getElementById('addCode').value,
+            name: document.getElementById('addName').value,
+            phone: document.getElementById('addPhone').value,
+            shipping: parseFloat(document.getElementById('addShipping').value),
+            completedShipments: 0,
+            activeShipments: 0,
+            status: document.getElementById('addStatus').value,
+            systemName: document.getElementById('addSystemName').value || 'غير محدد'
+        };
+
+        addCompanyCard(newCompany);
+        addCompanyModalToggle.checked = false;
+        e.target.reset();
+        alert('تم إضافة الشركة بنجاح!');
+    });
+
+    // تعديل الشركة
+    document.getElementById('editCompanyForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        if (!currentEditingCompany) return;
+
+        const updatedCompany = {
+            ...currentEditingCompany,
+            code: document.getElementById('editCode').value,
+            name: document.getElementById('editName').value,
+            phone: document.getElementById('editPhone').value,
+            shipping: parseFloat(document.getElementById('editShipping').value),
+            status: document.getElementById('editStatus').value,
+            systemName: document.getElementById('editSystemName').value
+        };
+
+        updateCompanyCard(updatedCompany);
+        editCompanyModalToggle.checked = false;
+        currentEditingCompany = null;
+        alert('تم تحديث بيانات الشركة بنجاح!');
+    });
+
+    // إضافة بطاقة شركة جديدة
+    function addCompanyCard(company) {
+        const companiesGrid = document.getElementById('companiesGrid');
+        const cardHTML = `
+                <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover" data-company='${JSON.stringify(company)}'>
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-lg mb-3">
+                            <span class="text-blue-600">كود:</span> ${company.code}
+                        </h2>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold text-gray-700">الاسم:</span> ${company.name}</p>
+                            <p><span class="font-semibold text-gray-700">الهاتف:</span> ${company.phone}</p>
+                            <p><span class="font-semibold text-gray-700">الشحن:</span> ${company.shipping} جنيه</p>
+                        </div>
+                        <div class="card-actions justify-end mt-4 gap-2">
+                            <button class="btn btn-info btn-sm details-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                التفاصيل
+                            </button>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                تعديل
+                            </button>
+                            <button class="btn btn-error btn-sm delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        companiesGrid.insertAdjacentHTML('beforeend', cardHTML);
+    }
+
+    // تحديث بطاقة الشركة
+    function updateCompanyCard(company) {
+        const card = document.querySelector(`[data-company*='"id":${company.id}']`);
+        if (card) {
+            card.setAttribute('data-company', JSON.stringify(company));
+            card.querySelector('.card-title').innerHTML = `<span class="text-blue-600">كود:</span> ${company.code}`;
+            const details = card.querySelectorAll('.space-y-2 p');
+            details[0].innerHTML = `<span class="font-semibold text-gray-700">الاسم:</span> ${company.name}`;
+            details[1].innerHTML = `<span class="font-semibold text-gray-700">الهاتف:</span> ${company.phone}`;
+            details[2].innerHTML = `<span class="font-semibold text-gray-700">الشحن:</span> ${company.shipping} جنيه`;
+        }
+    }
+
+    // البحث في الشركات
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('#companiesGrid .card');
+
+        cards.forEach(card => {
+            const companyData = JSON.parse(card.getAttribute('data-company'));
+            const searchableText = `${companyData.name} ${companyData.code} ${companyData.phone}`.toLowerCase();
+
+            if (searchableText.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>

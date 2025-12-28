@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>المصروفات - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .expense-card {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .expense-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4);
+        }
+
+        .expense-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+        }
+
+        .expense-card-header {
+            margin-bottom: 16px;
+        }
+
+        .expense-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f9fafb;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .expense-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+
+        .expense-date {
+            font-size: 0.9rem;
+            color: #d1d5db;
+            font-weight: 500;
+        }
+
+        .expense-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .grid-responsive {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-responsive {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .search-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .search-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            background: #e2e8f0;
+            transform: translateX(-4px);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-left: 12px;
+        }
+
+        .legend-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .legend-text {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .legend-percentage {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .legend-amount {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+    <!-- الشريط العلوى-->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center gap-6 ml-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-600 hover:text-gray-800 font-semibold">الماليه</a>
+                    </li>
+                    <li class="text-blue-600 font-bold">المصروفات </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- عنوان الصفحة -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <button onclick="exportExpenses()"
+                        class="btn btn-success btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        تحميل البيانات
+                    </button>
+                    <button onclick="openAddExpenseModal()"
+                        class="btn btn-primary btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        إضافة مصروف
+                    </button>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-2">المصروفات</h1>
+                    <p class="text-white/80 text-lg">إدارة وتتبع المصروفات</p>
+                </div>
+            </div>
+
+            <!-- بطاقات الإحصائيات -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <!-- إجمالي المصروفات -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">💰</div>
+                    <h3 class="text-lg font-bold mb-2">إجمالي المصروفات</h3>
+                    <p class="text-3xl font-bold mb-1" id="totalExpenses">0</p>
+                    <p class="text-white/80 text-sm">جنيه مصري</p>
+                </div>
+
+                <!-- مصروفات هذا الشهر -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">📅</div>
+                    <h3 class="text-lg font-bold mb-2">هذا الشهر</h3>
+                    <p class="text-3xl font-bold mb-1" id="monthlyExpenses">0</p>
+                    <p class="text-white/80 text-sm">جنيه مصري</p>
+                </div>
+
+                <!-- عدد المصروفات -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">📊</div>
+                    <h3 class="text-lg font-bold mb-2">عدد المصروفات</h3>
+                    <p class="text-3xl font-bold mb-1" id="expenseCount">0</p>
+                    <p class="text-white/80 text-sm">مصروف</p>
+                </div>
+
+                <!-- متوسط المصروف -->
+                <div
+                    class="stats-card rounded-2xl p-6 text-center shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 text-white">
+                    <div class="text-4xl mb-3">📈</div>
+                    <h3 class="text-lg font-bold mb-2">متوسط المصروف</h3>
+                    <p class="text-3xl font-bold mb-1" id="averageExpense">0</p>
+                    <p class="text-white/80 text-sm">جنيه مصري</p>
+                </div>
+            </div>
+
+            <!-- الرسم البياني لتوزيع المصروفات -->
+            <div id="chartSection" class="chart-container hidden">
+                <div class="flex items-center gap-3 mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-800">توزيع المصروفات حسب الشركات</h2>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="flex justify-center">
+                        <svg id="pieChart" width="300" height="300" class="mx-auto"></svg>
+                    </div>
+                    <div id="chartLegend" class="chart-legend"></div>
+                </div>
+            </div>
+
+            <!-- قسم البحث والتصفية -->
+            <div class="card glass-effect shadow-2xl rounded-2xl overflow-hidden mb-8">
+                <div class="card-body p-0">
+                    <div class="p-6 border-b border-gray-200">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                            🔍 البحث والتصفية
+                        </h2>
+                    </div>
+
+                    <div class="p-6">
+                        <!-- فلاتر التاريخ -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium text-gray-600">من</span>
+                                </label>
+                                <input type="datetime-local" id="dateFromFilter" class="input input-bordered"
+                                    onchange="filterExpenses()" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium text-gray-600">إلى</span>
+                                </label>
+                                <input type="datetime-local" id="dateToFilter" class="input input-bordered"
+                                    onchange="filterExpenses()" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium text-gray-600">رقم الشركة</span>
+                                </label>
+                                <input type="text" id="companyFilter" class="input input-bordered"
+                                    placeholder="رقم الشركة" onkeyup="filterExpenses()" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium text-gray-600">&nbsp;</span>
+                                </label>
+                                <button onclick="searchExpenses()" class="search-btn w-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block ml-2"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    بحث
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- شريط البحث -->
+                        <div class="form-control w-full">
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="ابحث في الوصف أو رقم الشحنة..."
+                                    class="input input-bordered w-full pr-12" onkeyup="searchExpenses()" />
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 absolute right-4 top-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- عرض المصروفات -->
+            <div class="card glass-effect shadow-2xl rounded-2xl overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="p-6 border-b border-gray-200">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                            📋 قائمة المصروفات
+                        </h2>
+                    </div>
+
+                    <div class="p-6">
+                        <div id="expensesResults">
+                            <div id="noDataMessage" class="text-center py-12">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-4"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7" />
+                                </svg>
+                                <h3 class="text-xl font-semibold text-gray-600 mb-2">لا يوجد بيانات</h3>
+                                <p class="text-gray-500">لا توجد مصروفات مسجلة حالياً</p>
+                            </div>
+                            <div id="expensesContainer" class="hidden grid-responsive"></div>
+                        </div>
+                    </div>
+
+                    <!-- شريط الصفحات -->
+                    <div id="paginationContainer" class="hidden p-6 border-t border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm text-gray-600">
+                                عرض <span id="showingFrom">1</span> إلى <span id="showingTo">10</span> من <span
+                                    id="totalResults">0</span> نتيجة
+                            </div>
+                            <div class="join">
+                                <button id="prevBtn" class="join-item btn btn-outline"
+                                    onclick="changePage(-1)">السابق</button>
+                                <button class="join-item btn btn-outline btn-active" id="currentPageBtn">1</button>
+                                <button id="nextBtn" class="join-item btn btn-outline"
+                                    onclick="changePage(1)">التالي</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal إضافة مصروف جديد -->
+    <div id="addExpenseModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-box w-11/12 max-w-2xl p-0 rounded-3xl bg-white">
+            <div class="sticky top-0 z-10 bg-gradient-to-r from-green-600 to-blue-600 p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        إضافة مصروف جديد
+                    </h3>
+                    <button onclick="closeAddExpenseModal()"
+                        class="btn btn-ghost btn-circle text-white hover:bg-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">القيمة *</span>
+                            </label>
+                            <input type="number" id="expenseAmount" class="input input-bordered" placeholder="0.00"
+                                step="0.01" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">الوصف *</span>
+                            </label>
+                            <input type="text" id="expenseDescription" class="input input-bordered"
+                                placeholder="وصف المصروف" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">رقم الشركة *</span>
+                            </label>
+                            <input type="text" id="expenseCompanyNumber" class="input input-bordered"
+                                placeholder="رقم الشركة" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">رقم الشحنة *</span>
+                            </label>
+                            <input type="text" id="expenseShipmentNumber" class="input input-bordered"
+                                placeholder="رقم الشحنة" />
+                        </div>
+                        <div class="form-control md:col-span-2">
+                            <label class="label">
+                                <span class="label-text font-semibold">التاريخ والوقت *</span>
+                            </label>
+                            <input type="datetime-local" id="expenseDate" class="input input-bordered" />
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
+                        <button onclick="closeAddExpenseModal()" class="btn btn-outline btn-lg">
+                            إلغاء
+                        </button>
+                        <button onclick="saveExpense()" class="btn bg-green-600 hover:bg-green-700 text-white btn-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            إضافة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal تعديل المصروف -->
+    <div id="editExpenseModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-box w-11/12 max-w-2xl p-0 rounded-3xl bg-white">
+            <div class="sticky top-0 z-10 bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        تعديل المصروف
+                    </h3>
+                    <button onclick="closeEditExpenseModal()"
+                        class="btn btn-ghost btn-circle text-white hover:bg-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6" id="editExpenseModalContent">
+                <!-- سيتم ملء المحتوى ديناميكياً -->
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm bg-blue-600 text-white rounded-lg mb-1">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let sidebarOpen = false;
+        let expenses = [];
+        let filteredExpenses = [];
+        let currentPage = 1;
+        let itemsPerPage = 8;
+        let editingExpenseId = null;
+
+        // ألوان الرسم البياني
+        const chartColors = ['#ec4899', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        // إدارة الشريط الجانبي
+        function openSidebarFunc() {
+            sidebar.classList.remove('sidebar-closed');
+            sidebar.classList.add('sidebar-open');
+            mainContent.style.marginRight = '320px';
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            mainContent.style.marginRight = '0';
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        }
+
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            } else {
+                openSidebarFunc();
+            }
+        }
+
+        // ربط أزرار التحكم
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', () => {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+
+        // دالة تبديل القائمة الفرعية
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // فتح نافذة إضافة مصروف
+        function openAddExpenseModal() {
+            // تعيين التاريخ والوقت الحالي
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('expenseDate').value = localDateTime;
+
+            document.getElementById('addExpenseModal').classList.add('modal-open');
+        }
+
+        // إغلاق نافذة إضافة مصروف
+        function closeAddExpenseModal() {
+            document.getElementById('addExpenseModal').classList.remove('modal-open');
+            // مسح النموذج
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseDescription').value = '';
+            document.getElementById('expenseCompanyNumber').value = '';
+            document.getElementById('expenseShipmentNumber').value = '';
+            document.getElementById('expenseDate').value = '';
+        }
+
+        // حفظ المصروف
+        function saveExpense() {
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const description = document.getElementById('expenseDescription').value.trim();
+            const companyNumber = document.getElementById('expenseCompanyNumber').value.trim();
+            const shipmentNumber = document.getElementById('expenseShipmentNumber').value.trim();
+            const date = document.getElementById('expenseDate').value;
+
+            // التحقق من البيانات المطلوبة
+            if (!amount || !description || !companyNumber || !shipmentNumber || !date) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            if (amount <= 0) {
+                alert('يجب أن تكون القيمة أكبر من صفر');
+                return;
+            }
+
+            // إنشاء مصروف جديد
+            const newExpense = {
+                id: 'EXP' + Date.now(),
+                amount: amount,
+                description: description,
+                companyNumber: companyNumber,
+                shipmentNumber: shipmentNumber,
+                date: date,
+                createdAt: new Date().toISOString()
+            };
+
+            expenses.push(newExpense);
+            filteredExpenses = [...expenses];
+
+            updateStats();
+            updateChart();
+            displayExpenses();
+            closeAddExpenseModal();
+            showSuccessMessage('تم إضافة المصروف بنجاح!');
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const count = expenses.length;
+            const average = count > 0 ? total / count : 0;
+
+            // حساب مصروفات هذا الشهر
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthlyTotal = expenses
+                .filter(expense => {
+                    const expenseDate = new Date(expense.date);
+                    return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+                })
+                .reduce((sum, expense) => sum + expense.amount, 0);
+
+            document.getElementById('totalExpenses').textContent = total.toFixed(2);
+            document.getElementById('monthlyExpenses').textContent = monthlyTotal.toFixed(2);
+            document.getElementById('expenseCount').textContent = count;
+            document.getElementById('averageExpense').textContent = average.toFixed(2);
+        }
+
+        // تحديث الرسم البياني
+        function updateChart() {
+            const chartSection = document.getElementById('chartSection');
+
+            if (expenses.length === 0) {
+                chartSection.classList.add('hidden');
+                return;
+            }
+
+            chartSection.classList.remove('hidden');
+
+            // حساب توزيع الشركات
+            const companyDistribution = expenses.reduce((acc, expense) => {
+                acc[expense.companyNumber] = (acc[expense.companyNumber] || 0) + expense.amount;
+                return acc;
+            }, {});
+
+            const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const companyEntries = Object.entries(companyDistribution)
+                .map(([company, amount]) => ({
+                    company,
+                    amount,
+                    percentage: totalAmount > 0 ? (amount / totalAmount) * 100 : 0
+                }))
+                .sort((a, b) => b.amount - a.amount);
+
+            // رسم الدائرة
+            drawPieChart(companyEntries, totalAmount);
+
+            // رسم الأسطورة
+            drawLegend(companyEntries);
+        }
+
+        // رسم الرسم البياني الدائري
+        function drawPieChart(data, total) {
+            const svg = document.getElementById('pieChart');
+            svg.innerHTML = '';
+
+            const radius = 120;
+            const centerX = 150;
+            const centerY = 150;
+            let currentAngle = 0;
+
+            data.forEach((entry, index) => {
+                const startAngle = currentAngle;
+                const endAngle = currentAngle + (entry.percentage / 100) * 360;
+                currentAngle = endAngle;
+
+                const startAngleRad = (startAngle * Math.PI) / 180;
+                const endAngleRad = (endAngle * Math.PI) / 180;
+
+                const x1 = centerX + radius * Math.cos(startAngleRad);
+                const y1 = centerY + radius * Math.sin(startAngleRad);
+                const x2 = centerX + radius * Math.cos(endAngleRad);
+                const y2 = centerY + radius * Math.sin(endAngleRad);
+
+                const largeArcFlag = entry.percentage > 50 ? 1 : 0;
+
+                const pathData = [
+                    `M ${centerX} ${centerY}`,
+                    `L ${x1} ${y1}`,
+                    `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                    'Z'
+                ].join(' ');
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', pathData);
+                path.setAttribute('fill', chartColors[index % chartColors.length]);
+                path.setAttribute('stroke', 'white');
+                path.setAttribute('stroke-width', '2');
+
+                svg.appendChild(path);
+            });
+
+            // الدائرة الداخلية
+            const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            innerCircle.setAttribute('cx', centerX);
+            innerCircle.setAttribute('cy', centerY);
+            innerCircle.setAttribute('r', '60');
+            innerCircle.setAttribute('fill', 'white');
+            innerCircle.setAttribute('stroke', '#e5e7eb');
+            innerCircle.setAttribute('stroke-width', '1');
+            svg.appendChild(innerCircle);
+
+            // النص في الوسط
+            const totalText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            totalText.setAttribute('x', centerX);
+            totalText.setAttribute('y', centerY - 8);
+            totalText.setAttribute('text-anchor', 'middle');
+            totalText.setAttribute('class', 'text-2xl font-bold fill-gray-800');
+            totalText.textContent = total.toFixed(0);
+            svg.appendChild(totalText);
+
+            const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            labelText.setAttribute('x', centerX);
+            labelText.setAttribute('y', centerY + 12);
+            labelText.setAttribute('text-anchor', 'middle');
+            labelText.setAttribute('class', 'text-sm fill-gray-600');
+            labelText.textContent = 'إجمالي';
+            svg.appendChild(labelText);
+        }
+
+        // رسم الأسطورة
+        function drawLegend(data) {
+            const legend = document.getElementById('chartLegend');
+            legend.innerHTML = '';
+
+            data.forEach((entry, index) => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+
+                legendItem.innerHTML = `
+                        <div class="legend-info">
+                            <div class="legend-color" style="background-color: ${chartColors[index % chartColors.length]}"></div>
+                            <div>
+                                <div class="legend-text">شركة ${entry.company}</div>
+                                <div class="legend-percentage">(${entry.percentage.toFixed(1)}%)</div>
+                            </div>
+                        </div>
+                        <div class="legend-amount">${entry.amount.toFixed(2)} ج.م</div>
+                    `;
+
+                legend.appendChild(legendItem);
+            });
+        }
+
+        // عرض المصروفات
+        function displayExpenses() {
+            const container = document.getElementById('expensesContainer');
+            const noDataMessage = document.getElementById('noDataMessage');
+            const paginationContainer = document.getElementById('paginationContainer');
+
+            if (filteredExpenses.length === 0) {
+                container.classList.add('hidden');
+                noDataMessage.classList.remove('hidden');
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            noDataMessage.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            // حساب الصفحات
+            const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentExpenses = filteredExpenses.slice(startIndex, endIndex);
+
+            // عرض المصروفات كبطاقات
+            container.innerHTML = currentExpenses.map(expense => `
+                    <div class="expense-card fade-in">
+                        <div class="expense-card-header">
+                            <div class="expense-title">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                ${expense.description}
+                            </div>
+                            <div class="expense-amount">${expense.amount.toFixed(2)} جنيه</div>
+                            <div class="expense-date">${formatDateTime(expense.date)}</div>
+                        </div>
+
+                        <div class="expense-details text-sm text-gray-300 space-y-2 mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-400">#</span>
+                                <span>${expense.id}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-400">🏢</span>
+                                <span>رقم الشركة: ${expense.companyNumber}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-400">📦</span>
+                                <span>رقم الشحنة: ${expense.shipmentNumber}</span>
+                            </div>
+                        </div>
+
+                        <div class="expense-actions">
+                            <button class="btn-delete" onclick="deleteExpense('${expense.id}')">
+                                حذف
+                            </button>
+                            <button class="btn-edit" onclick="editExpense('${expense.id}')">
+                                تعديل
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+            // تحديث شريط الصفحات
+            updatePagination();
+        }
+
+        // تحديث شريط الصفحات
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredExpenses.length);
+
+            document.getElementById('showingFrom').textContent = startIndex + 1;
+            document.getElementById('showingTo').textContent = endIndex;
+            document.getElementById('totalResults').textContent = filteredExpenses.length;
+            document.getElementById('currentPageBtn').textContent = currentPage;
+
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+
+            document.getElementById('paginationContainer').classList.remove('hidden');
+        }
+
+        // تغيير الصفحة
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+            const newPage = currentPage + direction;
+
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                displayExpenses();
+            }
+        }
+
+        // البحث في المصروفات
+        function searchExpenses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredExpenses = expenses.filter(expense =>
+                expense.description.toLowerCase().includes(searchTerm) ||
+                expense.shipmentNumber.toLowerCase().includes(searchTerm) ||
+                expense.companyNumber.toLowerCase().includes(searchTerm) ||
+                expense.id.toLowerCase().includes(searchTerm)
+            );
+
+            currentPage = 1;
+            displayExpenses();
+        }
+
+        // تصفية المصروفات
+        function filterExpenses() {
+            const companyFilter = document.getElementById('companyFilter').value.toLowerCase();
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredExpenses = expenses.filter(expense => {
+                let matchesSearch = !searchTerm ||
+                    expense.description.toLowerCase().includes(searchTerm) ||
+                    expense.shipmentNumber.toLowerCase().includes(searchTerm) ||
+                    expense.companyNumber.toLowerCase().includes(searchTerm) ||
+                    expense.id.toLowerCase().includes(searchTerm);
+
+                let matchesCompany = !companyFilter || expense.companyNumber.toLowerCase().includes(companyFilter);
+
+                let matchesDateFrom = !dateFromFilter || expense.date >= dateFromFilter;
+                let matchesDateTo = !dateToFilter || expense.date <= dateToFilter;
+
+                return matchesSearch && matchesCompany && matchesDateFrom && matchesDateTo;
+            });
+
+            currentPage = 1;
+            displayExpenses();
+        }
+
+        // حذف مصروف
+        function deleteExpense(expenseId) {
+            if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
+                expenses = expenses.filter(e => e.id !== expenseId);
+                filteredExpenses = filteredExpenses.filter(e => e.id !== expenseId);
+
+                // إذا كانت الصفحة الحالية فارغة، انتقل للصفحة السابقة
+                const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+                if (currentPage > totalPages && currentPage > 1) {
+                    currentPage = totalPages;
+                }
+
+                updateStats();
+                updateChart();
+                displayExpenses();
+                showSuccessMessage('تم حذف المصروف بنجاح!');
+            }
+        }
+
+        // تعديل مصروف
+        function editExpense(expenseId) {
+            const expense = expenses.find(e => e.id === expenseId);
+            if (!expense) return;
+
+            editingExpenseId = expenseId;
+            const modalContent = document.getElementById('editExpenseModalContent');
+            modalContent.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">رقم المصروف</span>
+                                </label>
+                                <input type="text" id="editExpenseId" value="${expense.id}" class="input input-bordered" readonly />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">القيمة *</span>
+                                </label>
+                                <input type="number" id="editExpenseAmount" value="${expense.amount}" class="input input-bordered" step="0.01" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">الوصف *</span>
+                                </label>
+                                <input type="text" id="editExpenseDescription" value="${expense.description}" class="input input-bordered" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">رقم الشركة *</span>
+                                </label>
+                                <input type="text" id="editExpenseCompanyNumber" value="${expense.companyNumber}" class="input input-bordered" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">رقم الشحنة *</span>
+                                </label>
+                                <input type="text" id="editExpenseShipmentNumber" value="${expense.shipmentNumber}" class="input input-bordered" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">التاريخ والوقت *</span>
+                                </label>
+                                <input type="datetime-local" id="editExpenseDate" value="${expense.date}" class="input input-bordered" />
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
+                            <button onclick="closeEditExpenseModal()" class="btn btn-outline btn-lg">
+                                إلغاء
+                            </button>
+                            <button onclick="saveExpenseChanges()" class="btn btn-primary btn-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                حفظ التغييرات
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+            document.getElementById('editExpenseModal').classList.add('modal-open');
+        }
+
+        // حفظ تغييرات المصروف
+        function saveExpenseChanges() {
+            if (!editingExpenseId) return;
+
+            const expenseIndex = expenses.findIndex(e => e.id === editingExpenseId);
+            if (expenseIndex === -1) return;
+
+            // جمع البيانات من النموذج
+            const updatedData = {
+                amount: parseFloat(document.getElementById('editExpenseAmount').value),
+                description: document.getElementById('editExpenseDescription').value.trim(),
+                companyNumber: document.getElementById('editExpenseCompanyNumber').value.trim(),
+                shipmentNumber: document.getElementById('editExpenseShipmentNumber').value.trim(),
+                date: document.getElementById('editExpenseDate').value
+            };
+
+            // التحقق من البيانات
+            if (!updatedData.amount || !updatedData.description || !updatedData.companyNumber || !updatedData.shipmentNumber || !updatedData.date) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            if (updatedData.amount <= 0) {
+                alert('يجب أن تكون القيمة أكبر من صفر');
+                return;
+            }
+
+            // تحديث البيانات
+            expenses[expenseIndex] = { ...expenses[expenseIndex], ...updatedData };
+
+            // تحديث المصفوفة المفلترة أيضاً
+            const filteredIndex = filteredExpenses.findIndex(e => e.id === editingExpenseId);
+            if (filteredIndex !== -1) {
+                filteredExpenses[filteredIndex] = { ...filteredExpenses[filteredIndex], ...updatedData };
+            }
+
+            updateStats();
+            updateChart();
+            displayExpenses();
+            closeEditExpenseModal();
+            showSuccessMessage('تم تحديث بيانات المصروف بنجاح!');
+        }
+
+        // إغلاق نافذة التعديل
+        function closeEditExpenseModal() {
+            document.getElementById('editExpenseModal').classList.remove('modal-open');
+            editingExpenseId = null;
+        }
+
+        // تصدير المصروفات
+        function exportExpenses() {
+            if (expenses.length === 0) {
+                alert('لا توجد بيانات للتصدير');
+                return;
+            }
+
+            // تحضير البيانات للتصدير
+            const csvData = [
+                ['رقم المصروف', 'القيمة', 'الوصف', 'رقم الشركة', 'رقم الشحنة', 'التاريخ والوقت'],
+                ...expenses.map(expense => [
+                    expense.id,
+                    expense.amount,
+                    expense.description,
+                    expense.companyNumber,
+                    expense.shipmentNumber,
+                    formatDateTime(expense.date)
+                ])
+            ];
+
+            // تحويل إلى CSV
+            const csvContent = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            // إنشاء ملف وتحميله
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `expenses_export_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+
+            showSuccessMessage('تم تصدير البيانات بنجاح!');
+        }
+
+        // تنسيق التاريخ والوقت
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // إظهار رسالة نجاح
+        function showSuccessMessage(message) {
+            // إنشاء عنصر التنبيه
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success fixed top-24 right-6 z-50 max-w-md shadow-2xl';
+            alert.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>${message}</span>
+                `;
+
+            document.body.appendChild(alert);
+
+            // إزالة التنبيه بعد 5 ثوانٍ
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // إعداد الأحداث عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebarToggle.addEventListener('click', toggleSidebar);
+
+            // فتح القوائم الفرعية افتراضياً
+            toggleSubmenu('finance');
+
+            // تحديث الإحصائيات في البداية
+            updateStats();
+
+            // إغلاق النوافذ المنبثقة عند النقر خارجها
+            document.getElementById('addExpenseModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeAddExpenseModal();
+                }
+            });
+
+            document.getElementById('editExpenseModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeEditExpenseModal();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

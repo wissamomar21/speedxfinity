@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>التسليمات - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-custom {
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-delivered {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in-progress {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+    <!-- الشريط العلوي -->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center gap-6">
+            <div class="breadcrumbs text-sm">
+                <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                    <li>
+                        <a href="homepage.html"
+                            class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            الرئيسية
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-600 hover:text-gray-800 font-semibold">الشحنات</a>
+                    </li>
+                    <li class="text-blue-600 font-bold">التسليمات</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- عنوان الصفحة مع زر الإضافة -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    📦 بيانات التسليمات
+                </h2>
+                <button id="addDeliveryBtn"
+                    class="btn btn-success shadow-lg hover:shadow-xl transition-all duration-300 w-full md:w-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    إضافة تسليمة جديدة
+                </button>
+            </div>
+
+            <!-- شريط البحث -->
+            <div class="mb-6 max-w-md mx-auto">
+                <div class="relative">
+                    <input type="text" placeholder="ابحث في التسليمات..."
+                        class="input input-bordered w-full pr-12 text-right bg-white/90 backdrop-blur-sm"
+                        id="searchInput" />
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- البطاقات -->
+            <div class="bg-white/95 backdrop-blur-md p-6 rounded-xl shadow-lg">
+                <div id="deliveriesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- بطاقة تسليمة 1 -->
+                    <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                        data-delivery='{"id":1,"code":"DEL001","orderNumber":"ORD-2024-001","orderDate":"2024-01-15","warehouseName":"مخزن القاهرة الرئيسي","companyName":"شركة النقل السريع","representativeName":"أحمد محمد علي","customerName":"محمد أحمد حسين","address":"شارع الجمهورية، المنصورة","phone":"01234567890","productType":"أجهزة كهربائية","quantity":2,"invoiceNumber":"INV-2024-001","price":850.00,"priceWithoutShipping":825.50,"commission":42.50,"profit":183.00,"status":"تم التسليم"}'>
+                        <div class="card-body p-4">
+                            <h2 class="card-title text-lg mb-3">
+                                <span class="text-blue-600">أوردر:</span> ORD-2024-001
+                            </h2>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-semibold text-gray-700">المخزن:</span> مخزن القاهرة الرئيسي</p>
+                                <p><span class="font-semibold text-gray-700">الشركة:</span> شركة النقل السريع</p>
+                                <p><span class="font-semibold text-gray-700">العميل:</span> محمد أحمد حسين</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-gray-700">الحالة:</span>
+                                    <span class="badge badge-success badge-sm">تم التسليم</span>
+                                </div>
+                            </div>
+                            <div class="card-actions justify-end mt-4 gap-2">
+                                <button class="btn btn-info btn-sm details-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    التفاصيل
+                                </button>
+                                <button class="btn btn-primary btn-sm edit-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    تعديل
+                                </button>
+                                <button class="btn btn-error btn-sm delete-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    حذف
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- بطاقة تسليمة 2 -->
+                    <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                        data-delivery='{"id":2,"code":"DEL002","orderNumber":"ORD-2024-002","orderDate":"2024-01-16","warehouseName":"مخزن الاسكندرية","companyName":"الشركة المتحدة للخدمات","representativeName":"سارة أحمد محمود","customerName":"فاطمة محمد عبدالله","address":"شارع النصر، الإسكندرية","phone":"01987654321","productType":"مستحضرات تجميل","quantity":5,"invoiceNumber":"INV-2024-002","price":650.00,"priceWithoutShipping":615.00,"commission":32.50,"profit":142.50,"status":"قيد التوصيل"}'>
+                        <div class="card-body p-4">
+                            <h2 class="card-title text-lg mb-3">
+                                <span class="text-blue-600">أوردر:</span> ORD-2024-002
+                            </h2>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-semibold text-gray-700">المخزن:</span> مخزن الاسكندرية</p>
+                                <p><span class="font-semibold text-gray-700">الشركة:</span> الشركة المتحدة للخدمات</p>
+                                <p><span class="font-semibold text-gray-700">العميل:</span> فاطمة محمد عبدالله</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-gray-700">الحالة:</span>
+                                    <span class="badge badge-info badge-sm">قيد التوصيل</span>
+                                </div>
+                            </div>
+                            <div class="card-actions justify-end mt-4 gap-2">
+                                <button class="btn btn-info btn-sm details-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    التفاصيل
+                                </button>
+                                <button class="btn btn-primary btn-sm edit-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    تعديل
+                                </button>
+                                <button class="btn btn-error btn-sm delete-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    حذف
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- بطاقة تسليمة 3 -->
+                    <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                        data-delivery='{"id":3,"code":"DEL003","orderNumber":"ORD-2024-003","orderDate":"2024-01-17","warehouseName":"مخزن الجيزة","companyName":"شركة البرق للتوصيل","representativeName":"خالد سعد محمد","customerName":"أمينة حسن علي","address":"شارع الهرم، الجيزة","phone":"01567890123","productType":"ملابس","quantity":3,"invoiceNumber":"INV-2024-003","price":420.00,"priceWithoutShipping":401.25,"commission":21.00,"profit":89.25,"status":"تم التسليم"}'>
+                        <div class="card-body p-4">
+                            <h2 class="card-title text-lg mb-3">
+                                <span class="text-blue-600">أوردر:</span> ORD-2024-003
+                            </h2>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-semibold text-gray-700">المخزن:</span> مخزن الجيزة</p>
+                                <p><span class="font-semibold text-gray-700">الشركة:</span> شركة البرق للتوصيل</p>
+                                <p><span class="font-semibold text-gray-700">العميل:</span> أمينة حسن علي</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-gray-700">الحالة:</span>
+                                    <span class="badge badge-success badge-sm">تم التسليم</span>
+                                </div>
+                            </div>
+                            <div class="card-actions justify-end mt-4 gap-2">
+                                <button class="btn btn-info btn-sm details-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    التفاصيل
+                                </button>
+                                <button class="btn btn-primary btn-sm edit-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    تعديل
+                                </button>
+                                <button class="btn btn-error btn-sm delete-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    حذف
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- بطاقة تسليمة 4 -->
+                    <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                        data-delivery='{"id":4,"code":"DEL004","orderNumber":"ORD-2024-004","orderDate":"2024-01-18","warehouseName":"مخزن الشرقية","companyName":"الشركة الذهبية","representativeName":"نور الدين أحمد","customerName":"حسام محمد صلاح","address":"شارع الجلاء، الزقازيق","phone":"01456789012","productType":"كتب","quantity":10,"invoiceNumber":"INV-2024-004","price":320.00,"priceWithoutShipping":277.75,"commission":16.00,"profit":61.75,"status":"ملغي"}'>
+                        <div class="card-body p-4">
+                            <h2 class="card-title text-lg mb-3">
+                                <span class="text-blue-600">أوردر:</span> ORD-2024-004
+                            </h2>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-semibold text-gray-700">المخزن:</span> مخزن الشرقية</p>
+                                <p><span class="font-semibold text-gray-700">الشركة:</span> الشركة الذهبية</p>
+                                <p><span class="font-semibold text-gray-700">العميل:</span> حسام محمد صلاح</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-gray-700">الحالة:</span>
+                                    <span class="badge badge-error badge-sm">ملغي</span>
+                                </div>
+                            </div>
+                            <div class="card-actions justify-end mt-4 gap-2">
+                                <button class="btn btn-info btn-sm details-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    التفاصيل
+                                </button>
+                                <button class="btn btn-primary btn-sm edit-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    تعديل
+                                </button>
+                                <button class="btn btn-error btn-sm delete-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    حذف
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- بطاقة تسليمة 5 -->
+                    <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover"
+                        data-delivery='{"id":5,"code":"DEL005","orderNumber":"ORD-2024-005","orderDate":"2024-01-19","warehouseName":"مخزن الدقهلية","companyName":"مجموعة النجم للشحن","representativeName":"مريم عبدالرحمن","customerName":"ياسر محمود حسن","address":"شارع البحر، دمياط","phone":"01345678901","productType":"أدوات رياضية","quantity":1,"invoiceNumber":"INV-2024-005","price":1200.00,"priceWithoutShipping":1170.10,"commission":60.00,"profit":260.10,"status":"تم التسليم"}'>
+                        <div class="card-body p-4">
+                            <h2 class="card-title text-lg mb-3">
+                                <span class="text-blue-600">أوردر:</span> ORD-2024-005
+                            </h2>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-semibold text-gray-700">المخزن:</span> مخزن الدقهلية</p>
+                                <p><span class="font-semibold text-gray-700">الشركة:</span> مجموعة النجم للشحن</p>
+                                <p><span class="font-semibold text-gray-700">العميل:</span> ياسر محمود حسن</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-gray-700">الحالة:</span>
+                                    <span class="badge badge-success badge-sm">تم التسليم</span>
+                                </div>
+                            </div>
+                            <div class="card-actions justify-end mt-4 gap-2">
+                                <button class="btn btn-info btn-sm details-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    التفاصيل
+                                </button>
+                                <button class="btn btn-primary btn-sm edit-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    تعديل
+                                </button>
+                                <button class="btn btn-error btn-sm delete-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    حذف
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- رسالة عدم وجود نتائج -->
+                <div id="noResults" class="text-center py-12 hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <p class="text-gray-500 text-lg">لا توجد تسليمات تطابق البحث</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال التفاصيل -->
+    <input type="checkbox" id="detailsModalToggle" class="modal-toggle" />
+    <div class="modal">
+        <div class="modal-box max-w-4xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">تفاصيل التسليمة</h3>
+                <label for="detailsModalToggle" class="btn btn-sm btn-circle btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-right">
+                <div class="space-y-4">
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">الكود:</span>
+                        </label>
+                        <input type="text" id="detailsCode" class="input input-bordered w-full bg-gray-50" readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">رقم الأوردر:</span>
+                        </label>
+                        <input type="text" id="detailsOrderNumber" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">تاريخ الأوردر:</span>
+                        </label>
+                        <input type="text" id="detailsOrderDate" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">اسم المخزن:</span>
+                        </label>
+                        <input type="text" id="detailsWarehouseName" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">اسم الشركة:</span>
+                        </label>
+                        <input type="text" id="detailsCompanyName" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">اسم المندوب:</span>
+                        </label>
+                        <input type="text" id="detailsRepresentativeName" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">اسم العميل:</span>
+                        </label>
+                        <input type="text" id="detailsCustomerName" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">العنوان:</span>
+                        </label>
+                        <input type="text" id="detailsAddress" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">الحالة:</span>
+                        </label>
+                        <div id="detailsStatus" class="badge badge-lg w-full py-3"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">التليفون:</span>
+                        </label>
+                        <input type="text" id="detailsPhone" class="input input-bordered w-full bg-gray-50" readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">نوع المنتج:</span>
+                        </label>
+                        <input type="text" id="detailsProductType" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">الكمية:</span>
+                        </label>
+                        <input type="text" id="detailsQuantity" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">رقم الفاتورة:</span>
+                        </label>
+                        <input type="text" id="detailsInvoiceNumber" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">السعر:</span>
+                        </label>
+                        <input type="text" id="detailsPrice" class="input input-bordered w-full bg-gray-50" readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">السعر بدون الشحن:</span>
+                        </label>
+                        <input type="text" id="detailsPriceWithoutShipping"
+                            class="input input-bordered w-full bg-gray-50" readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">العمولة:</span>
+                        </label>
+                        <input type="text" id="detailsCommission" class="input input-bordered w-full bg-gray-50"
+                            readonly />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold text-gray-700">الأرباح:</span>
+                        </label>
+                        <input type="text" id="detailsProfit" class="input input-bordered w-full bg-gray-50" readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إضافة تسليمة جديدة -->
+    <input type="checkbox" id="addDeliveryModalToggle" class="modal-toggle" />
+    <div class="modal">
+        <div class="modal-box max-w-4xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">إضافة تسليمة جديدة</h3>
+                <label for="addDeliveryModalToggle" class="btn btn-sm btn-circle btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </label>
+            </div>
+
+            <form id="addDeliveryForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الكود *</span>
+                        </label>
+                        <input type="text" id="addCode" class="input input-bordered w-full"
+                            placeholder="أدخل كود التسليمة" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">رقم الأوردر *</span>
+                        </label>
+                        <input type="text" id="addOrderNumber" class="input input-bordered w-full"
+                            placeholder="أدخل رقم الأوردر" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">تاريخ الأوردر *</span>
+                        </label>
+                        <input type="date" id="addOrderDate" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم المخزن *</span>
+                        </label>
+                        <input type="text" id="addWarehouseName" class="input input-bordered w-full"
+                            placeholder="أدخل اسم المخزن" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم الشركة *</span>
+                        </label>
+                        <input type="text" id="addCompanyName" class="input input-bordered w-full"
+                            placeholder="أدخل اسم الشركة" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم المندوب</span>
+                        </label>
+                        <input type="text" id="addRepresentativeName" class="input input-bordered w-full"
+                            placeholder="أدخل اسم المندوب" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم العميل *</span>
+                        </label>
+                        <input type="text" id="addCustomerName" class="input input-bordered w-full"
+                            placeholder="أدخل اسم العميل" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">العنوان *</span>
+                        </label>
+                        <input type="text" id="addAddress" class="input input-bordered w-full"
+                            placeholder="أدخل العنوان" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">التليفون</span>
+                        </label>
+                        <input type="tel" id="addPhone" class="input input-bordered w-full"
+                            placeholder="أدخل رقم التليفون" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">نوع المنتج</span>
+                        </label>
+                        <input type="text" id="addProductType" class="input input-bordered w-full"
+                            placeholder="أدخل نوع المنتج" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الكمية *</span>
+                        </label>
+                        <input type="number" id="addQuantity" class="input input-bordered w-full"
+                            placeholder="أدخل الكمية" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">رقم الفاتورة</span>
+                        </label>
+                        <input type="text" id="addInvoiceNumber" class="input input-bordered w-full"
+                            placeholder="أدخل رقم الفاتورة" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">السعر (جنيه) *</span>
+                        </label>
+                        <input type="number" step="0.01" id="addPrice" class="input input-bordered w-full"
+                            placeholder="أدخل السعر" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">السعر بدون الشحن (جنيه)</span>
+                        </label>
+                        <input type="number" step="0.01" id="addPriceWithoutShipping"
+                            class="input input-bordered w-full" placeholder="أدخل السعر بدون الشحن" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">العمولة (جنيه)</span>
+                        </label>
+                        <input type="number" step="0.01" id="addCommission" class="input input-bordered w-full"
+                            placeholder="أدخل العمولة" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الأرباح (جنيه)</span>
+                        </label>
+                        <input type="number" step="0.01" id="addProfit" class="input input-bordered w-full"
+                            placeholder="أدخل الأرباح" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الحالة</span>
+                        </label>
+                        <select id="addStatus" class="select select-bordered w-full">
+                            <option value="قيد التوصيل">قيد التوصيل</option>
+                            <option value="تم التسليم">تم التسليم</option>
+                            <option value="ملغي">ملغي</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">إضافة التسليمة</button>
+                    <label for="addDeliveryModalToggle" class="btn btn-ghost">إلغاء</label>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال التعديل -->
+    <input type="checkbox" id="editDeliveryModalToggle" class="modal-toggle" />
+    <div class="modal">
+        <div class="modal-box max-w-4xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">تعديل بيانات التسليمة</h3>
+                <label for="editDeliveryModalToggle" class="btn btn-sm btn-circle btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </label>
+            </div>
+
+            <form id="editDeliveryForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الكود *</span>
+                        </label>
+                        <input type="text" id="editCode" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">رقم الأوردر *</span>
+                        </label>
+                        <input type="text" id="editOrderNumber" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">تاريخ الأوردر *</span>
+                        </label>
+                        <input type="date" id="editOrderDate" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم المخزن *</span>
+                        </label>
+                        <input type="text" id="editWarehouseName" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم الشركة *</span>
+                        </label>
+                        <input type="text" id="editCompanyName" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم المندوب</span>
+                        </label>
+                        <input type="text" id="editRepresentativeName" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">اسم العميل *</span>
+                        </label>
+                        <input type="text" id="editCustomerName" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">العنوان *</span>
+                        </label>
+                        <input type="text" id="editAddress" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">التليفون</span>
+                        </label>
+                        <input type="tel" id="editPhone" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">نوع المنتج</span>
+                        </label>
+                        <input type="text" id="editProductType" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الكمية *</span>
+                        </label>
+                        <input type="number" id="editQuantity" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">رقم الفاتورة</span>
+                        </label>
+                        <input type="text" id="editInvoiceNumber" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">السعر (جنيه) *</span>
+                        </label>
+                        <input type="number" step="0.01" id="editPrice" class="input input-bordered w-full" required />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">السعر بدون الشحن (جنيه)</span>
+                        </label>
+                        <input type="number" step="0.01" id="editPriceWithoutShipping"
+                            class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">العمولة (جنيه)</span>
+                        </label>
+                        <input type="number" step="0.01" id="editCommission" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الأرباح (جنيه)</span>
+                        </label>
+                        <input type="number" step="0.01" id="editProfit" class="input input-bordered w-full" />
+                    </div>
+
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-semibold">الحالة</span>
+                        </label>
+                        <select id="editStatus" class="select select-bordered w-full">
+                            <option value="قيد التوصيل">قيد التوصيل</option>
+                            <option value="تم التسليم">تم التسليم</option>
+                            <option value="ملغي">ملغي</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    <label for="editDeliveryModalToggle" class="btn btn-ghost">إلغاء</label>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm bg-blue-600 text-white rounded-lg mb-1">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let sidebarOpen = false;
+        let currentEditingDelivery = null;
+
+        // عناصر DOM
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        // إدارة الشريط الجانبي
+        function openSidebarFunc() {
+            sidebar.classList.remove('sidebar-closed');
+            sidebar.classList.add('sidebar-open');
+            mainContent.style.marginRight = '320px';
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            mainContent.style.marginRight = '0';
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        }
+
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            } else {
+                openSidebarFunc();
+            }
+        }
+
+        // ربط أزرار التحكم
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', () => {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+
+        // دالة تبديل القائمة الفرعية
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // فتح قائمة الشحنات افتراضياً
+        toggleSubmenu('shipments');
+
+        // إدارة المودالات والأزرار
+        const addDeliveryBtn = document.getElementById('addDeliveryBtn');
+        const addDeliveryModalToggle = document.getElementById('addDeliveryModalToggle');
+        const detailsModalToggle = document.getElementById('detailsModalToggle');
+        const editDeliveryModalToggle = document.getElementById('editDeliveryModalToggle');
+
+        // فتح مودال الإضافة
+        addDeliveryBtn.addEventListener('click', () => {
+            addDeliveryModalToggle.checked = true;
+        });
+
+        // إدارة أزرار البطاقات
+        document.addEventListener('click', (e) => {
+            const card = e.target.closest('.card');
+            if (!card) return;
+
+            const deliveryData = JSON.parse(card.getAttribute('data-delivery'));
+
+            if (e.target.closest('.details-btn')) {
+                showDeliveryDetails(deliveryData);
+            } else if (e.target.closest('.edit-btn')) {
+                showEditDelivery(deliveryData);
+            } else if (e.target.closest('.delete-btn')) {
+                deleteDelivery(deliveryData);
+            }
+        });
+
+        // عرض تفاصيل التسليمة
+        function showDeliveryDetails(delivery) {
+            document.getElementById('detailsCode').value = delivery.code;
+            document.getElementById('detailsOrderNumber').value = delivery.orderNumber;
+            document.getElementById('detailsOrderDate').value = delivery.orderDate;
+            document.getElementById('detailsWarehouseName').value = delivery.warehouseName;
+            document.getElementById('detailsCompanyName').value = delivery.companyName;
+            document.getElementById('detailsRepresentativeName').value = delivery.representativeName;
+            document.getElementById('detailsCustomerName').value = delivery.customerName;
+            document.getElementById('detailsAddress').value = delivery.address;
+            document.getElementById('detailsPhone').value = delivery.phone;
+            document.getElementById('detailsProductType').value = delivery.productType;
+            document.getElementById('detailsQuantity').value = delivery.quantity;
+            document.getElementById('detailsInvoiceNumber').value = delivery.invoiceNumber;
+            document.getElementById('detailsPrice').value = delivery.price + ' جنيه';
+            document.getElementById('detailsPriceWithoutShipping').value = delivery.priceWithoutShipping + ' جنيه';
+            document.getElementById('detailsCommission').value = delivery.commission + ' جنيه';
+            document.getElementById('detailsProfit').value = delivery.profit + ' جنيه';
+
+            const statusBadge = document.getElementById('detailsStatus');
+            statusBadge.textContent = delivery.status;
+
+            let badgeClass = 'badge badge-lg w-full py-3 ';
+            if (delivery.status === 'تم التسليم') {
+                badgeClass += 'badge-success';
+            } else if (delivery.status === 'قيد التوصيل') {
+                badgeClass += 'badge-info';
+            } else if (delivery.status === 'ملغي') {
+                badgeClass += 'badge-error';
+            }
+            statusBadge.className = badgeClass;
+
+            detailsModalToggle.checked = true;
+        }
+
+        // عرض تعديل التسليمة
+        function showEditDelivery(delivery) {
+            currentEditingDelivery = delivery;
+            document.getElementById('editCode').value = delivery.code;
+            document.getElementById('editOrderNumber').value = delivery.orderNumber;
+            document.getElementById('editOrderDate').value = delivery.orderDate;
+            document.getElementById('editWarehouseName').value = delivery.warehouseName;
+            document.getElementById('editCompanyName').value = delivery.companyName;
+            document.getElementById('editRepresentativeName').value = delivery.representativeName;
+            document.getElementById('editCustomerName').value = delivery.customerName;
+            document.getElementById('editAddress').value = delivery.address;
+            document.getElementById('editPhone').value = delivery.phone;
+            document.getElementById('editProductType').value = delivery.productType;
+            document.getElementById('editQuantity').value = delivery.quantity;
+            document.getElementById('editInvoiceNumber').value = delivery.invoiceNumber;
+            document.getElementById('editPrice').value = delivery.price;
+            document.getElementById('editPriceWithoutShipping').value = delivery.priceWithoutShipping;
+            document.getElementById('editCommission').value = delivery.commission;
+            document.getElementById('editProfit').value = delivery.profit;
+            document.getElementById('editStatus').value = delivery.status;
+
+            editDeliveryModalToggle.checked = true;
+        }
+
+        // حذف التسليمة
+        function deleteDelivery(delivery) {
+            if (confirm(`هل أنت متأكد من حذف التسليمة "${delivery.orderNumber}"؟`)) {
+                const card = document.querySelector(`[data-delivery*='"id":${delivery.id}']`);
+                if (card) {
+                    card.remove();
+                    checkNoResults();
+                }
+                alert('تم حذف التسليمة بنجاح!');
+            }
+        }
+
+        // إضافة تسليمة جديدة
+        document.getElementById('addDeliveryForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const newDelivery = {
+                id: Date.now(),
+                code: document.getElementById('addCode').value,
+                orderNumber: document.getElementById('addOrderNumber').value,
+                orderDate: document.getElementById('addOrderDate').value,
+                warehouseName: document.getElementById('addWarehouseName').value,
+                companyName: document.getElementById('addCompanyName').value,
+                representativeName: document.getElementById('addRepresentativeName').value || 'غير محدد',
+                customerName: document.getElementById('addCustomerName').value,
+                address: document.getElementById('addAddress').value,
+                phone: document.getElementById('addPhone').value || 'غير محدد',
+                productType: document.getElementById('addProductType').value || 'غير محدد',
+                quantity: parseInt(document.getElementById('addQuantity').value),
+                invoiceNumber: document.getElementById('addInvoiceNumber').value || 'غير محدد',
+                price: parseFloat(document.getElementById('addPrice').value),
+                priceWithoutShipping: parseFloat(document.getElementById('addPriceWithoutShipping').value) || 0,
+                commission: parseFloat(document.getElementById('addCommission').value) || 0,
+                profit: parseFloat(document.getElementById('addProfit').value) || 0,
+                status: document.getElementById('addStatus').value
+            };
+
+            addDeliveryCard(newDelivery);
+            addDeliveryModalToggle.checked = false;
+            e.target.reset();
+            alert('تم إضافة التسليمة بنجاح!');
+        });
+
+        // تعديل التسليمة
+        document.getElementById('editDeliveryForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!currentEditingDelivery) return;
+
+            const updatedDelivery = {
+                ...currentEditingDelivery,
+                code: document.getElementById('editCode').value,
+                orderNumber: document.getElementById('editOrderNumber').value,
+                orderDate: document.getElementById('editOrderDate').value,
+                warehouseName: document.getElementById('editWarehouseName').value,
+                companyName: document.getElementById('editCompanyName').value,
+                representativeName: document.getElementById('editRepresentativeName').value,
+                customerName: document.getElementById('editCustomerName').value,
+                address: document.getElementById('editAddress').value,
+                phone: document.getElementById('editPhone').value,
+                productType: document.getElementById('editProductType').value,
+                quantity: parseInt(document.getElementById('editQuantity').value),
+                invoiceNumber: document.getElementById('editInvoiceNumber').value,
+                price: parseFloat(document.getElementById('editPrice').value),
+                priceWithoutShipping: parseFloat(document.getElementById('editPriceWithoutShipping').value),
+                commission: parseFloat(document.getElementById('editCommission').value),
+                profit: parseFloat(document.getElementById('editProfit').value),
+                status: document.getElementById('editStatus').value
+            };
+
+            updateDeliveryCard(updatedDelivery);
+            editDeliveryModalToggle.checked = false;
+            currentEditingDelivery = null;
+            alert('تم تحديث بيانات التسليمة بنجاح!');
+        });
+
+        // إضافة بطاقة تسليمة جديدة
+        function addDeliveryCard(delivery) {
+            const deliveriesGrid = document.getElementById('deliveriesGrid');
+
+            let statusBadgeClass = 'badge badge-sm ';
+            if (delivery.status === 'تم التسليم') {
+                statusBadgeClass += 'badge-success';
+            } else if (delivery.status === 'قيد التوصيل') {
+                statusBadgeClass += 'badge-info';
+            } else if (delivery.status === 'ملغي') {
+                statusBadgeClass += 'badge-error';
+            }
+
+            const cardHTML = `
+                <div class="card w-full bg-base-100 shadow-md hover:shadow-lg transition-shadow card-hover" data-delivery='${JSON.stringify(delivery)}'>
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-lg mb-3">
+                            <span class="text-blue-600">أوردر:</span> ${delivery.orderNumber}
+                        </h2>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold text-gray-700">المخزن:</span> ${delivery.warehouseName}</p>
+                            <p><span class="font-semibold text-gray-700">الشركة:</span> ${delivery.companyName}</p>
+                            <p><span class="font-semibold text-gray-700">العميل:</span> ${delivery.customerName}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold text-gray-700">الحالة:</span>
+                                <span class="${statusBadgeClass}">${delivery.status}</span>
+                            </div>
+                        </div>
+                        <div class="card-actions justify-end mt-4 gap-2">
+                            <button class="btn btn-info btn-sm details-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                التفاصيل
+                            </button>
+                            <button class="btn btn-primary btn-sm edit-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                تعديل
+                            </button>
+                            <button class="btn btn-error btn-sm delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            deliveriesGrid.insertAdjacentHTML('beforeend', cardHTML);
+            checkNoResults();
+        }
+
+        // تحديث بطاقة التسليمة
+        function updateDeliveryCard(delivery) {
+            const card = document.querySelector(`[data-delivery*='"id":${delivery.id}']`);
+            if (card) {
+                card.setAttribute('data-delivery', JSON.stringify(delivery));
+                card.querySelector('.card-title').innerHTML = `<span class="text-blue-600">أوردر:</span> ${delivery.orderNumber}`;
+
+                const details = card.querySelectorAll('.space-y-2 p');
+                details[0].innerHTML = `<span class="font-semibold text-gray-700">المخزن:</span> ${delivery.warehouseName}`;
+                details[1].innerHTML = `<span class="font-semibold text-gray-700">الشركة:</span> ${delivery.companyName}`;
+                details[2].innerHTML = `<span class="font-semibold text-gray-700">العميل:</span> ${delivery.customerName}`;
+
+                const statusBadge = card.querySelector('.badge');
+                statusBadge.textContent = delivery.status;
+
+                let badgeClass = 'badge badge-sm ';
+                if (delivery.status === 'تم التسليم') {
+                    badgeClass += 'badge-success';
+                } else if (delivery.status === 'قيد التوصيل') {
+                    badgeClass += 'badge-info';
+                } else if (delivery.status === 'ملغي') {
+                    badgeClass += 'badge-error';
+                }
+                statusBadge.className = badgeClass;
+            }
+        }
+
+        // البحث في التسليمات
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#deliveriesGrid .card');
+
+            cards.forEach(card => {
+                const deliveryData = JSON.parse(card.getAttribute('data-delivery'));
+                const searchableText = `${deliveryData.orderNumber} ${deliveryData.warehouseName} ${deliveryData.companyName} ${deliveryData.customerName} ${deliveryData.productType}`.toLowerCase();
+
+                if (searchableText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            checkNoResults();
+        });
+
+        // فحص وجود نتائج
+        function checkNoResults() {
+            const cards = document.querySelectorAll('#deliveriesGrid .card');
+            const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+            const noResults = document.getElementById('noResults');
+
+            if (visibleCards.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

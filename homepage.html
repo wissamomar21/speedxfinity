@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لوحة التحكم - Speed-Xfinity</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-closed {
+            transform: translateX(100%);
+        }
+
+        .sidebar-open {
+            transform: translateX(0);
+        }
+
+        .content-shift {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .btn-action {
+            min-width: 72px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+        }
+
+        .quick-action-card {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+        }
+
+        .quick-action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4);
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-item {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .activity-item:hover {
+            transform: translateX(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .activity-item.success {
+            border-left-color: #10b981;
+        }
+
+        .activity-item.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .activity-item.info {
+            border-left-color: #3b82f6;
+        }
+
+        .activity-item.error {
+            border-left-color: #ef4444;
+        }
+
+        .notification-badge {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 20px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800">
+    <!-- الشريط العلوي -->
+    <div class="navbar glass-effect shadow-lg h-20 px-6 fixed top-0 left-0 right-0 z-40">
+        <button id="sidebarToggle" class="btn btn-ghost btn-square mr-4 hover:bg-purple-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                class="inline-block h-6 w-6 stroke-current text-gray-700">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- اللوجو + الاسم (يمين) -->
+        <div class="flex-1 flex justify-start">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">SX</span>
+                </div>
+                <div>
+                    <h1
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Speed-Xfinity
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="flex-1 flex justify-end">
+            <div class="flex items-center gap-4 ml-6">
+                <!-- الإشعارات -->
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle relative hover:bg-blue-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-5-5v-5a5 5 0 0 0-10 0v5l-5 5h5m5 0v1a3 3 0 0 1-6 0v-1m6 0H9" />
+                        </svg>
+                        <span class="notification-badge absolute -top-2 -right-2">3</span>
+                    </div>
+                    <div tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-2xl bg-white rounded-2xl w-80 mt-3">
+                        <div class="p-4 border-b border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-800">الإشعارات</h3>
+                        </div>
+                        <div class="p-2 max-h-64 overflow-y-auto">
+                            <div class="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                    <div>
+                                        <p class="text-sm text-gray-800 font-semibold">مصروف جديد يتطلب موافقة</p>
+                                        <p class="text-xs text-gray-500">منذ 5 دقائق</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <div>
+                                        <p class="text-sm text-gray-800 font-semibold">شحنة جديدة وصلت للمخزن</p>
+                                        <p class="text-xs text-gray-500">منذ 15 دقيقة</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <div>
+                                        <p class="text-sm text-gray-800 font-semibold">تم تسليم 50 شحنة بنجاح</p>
+                                        <p class="text-xs text-gray-500">منذ ساعة</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+        </div>
+        <!-- القوائم (شمال) -->
+        <div class="flex-none flex items-center gap-6 ml-6">
+            <div class="breadcrumbs flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                <a href="homepage.html" class="text-gray-600 hover:text-gray-800 font-semibold flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    الرئيسية
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="mainContent" class="pt-20 content-shift min-h-screen">
+        <div class="p-6 max-w-7xl mx-auto">
+            <!-- ترحيب -->
+            <div class="mb-8 fade-in">
+                <h1 class="text-4xl font-bold text-white mb-2">مرحباً بك في لوحة التحكم</h1>
+                <p class="text-white/80 text-lg">إدارة شاملة لجميع عمليات الشحن والتوصيل</p>
+                <div class="text-white/60 text-sm mt-2">
+                    آخر تحديث: <span id="lastUpdate"></span>
+                </div>
+            </div>
+
+            <!-- بطاقات الإحصائيات الرئيسية -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 stats-grid">
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">📦</div>
+                    <h3 class="text-lg font-bold mb-2">إجمالي الشحنات</h3>
+                    <p class="text-3xl font-bold mb-1">1,247</p>
+                    <div class="text-green-300 text-sm">↗ 12% من الشهر الماضي</div>
+                </div>
+
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">✅</div>
+                    <h3 class="text-lg font-bold mb-2">التسليمات الناجحة</h3>
+                    <p class="text-3xl font-bold mb-1">1,156</p>
+                    <div class="text-green-300 text-sm">↗ 8% من الشهر الماضي</div>
+                </div>
+
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">⏰</div>
+                    <h3 class="text-lg font-bold mb-2">في الانتظار</h3>
+                    <p class="text-3xl font-bold mb-1">91</p>
+                    <div class="text-yellow-300 text-sm">→ نفس المستوى</div>
+                </div>
+
+                <div class="stats-card rounded-2xl p-6 text-center shadow-xl text-white fade-in">
+                    <div class="text-4xl mb-3">💰</div>
+                    <h3 class="text-lg font-bold mb-2">الإيرادات</h3>
+                    <p class="text-3xl font-bold mb-1">₪45,230</p>
+                    <div class="text-green-300 text-sm">↗ 15% من الشهر الماضي</div>
+                </div>
+            </div>
+
+            <!-- الإجراءات السريعة -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    الإجراءات السريعة
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 quick-actions-grid">
+                    <!-- إضافة شحنة جديدة -->
+                    <div class="quick-action-card fade-in cursor-pointer" onclick="navigateTo('#')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">📦</div>
+                                <h3 class="text-xl font-bold mb-2">إضافة شحنة جديدة</h3>
+                                <p class="text-gray-300 text-sm">إدخال بيانات شحنة جديدة للنظام</p>
+                            </div>
+                            <div class="flex items-center text-blue-300 mt-4">
+                                <span class="text-sm font-medium">بدء العملية</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- إدارة المصروفات -->
+                    <div class="quick-action-card fade-in cursor-pointer" onclick="navigateTo('exepenses.html')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">💳</div>
+                                <h3 class="text-xl font-bold mb-2">إدارة المصروفات</h3>
+                                <p class="text-gray-300 text-sm">تتبع وإدارة جميع المصروفات</p>
+                            </div>
+                            <div class="flex items-center text-green-300 mt-4">
+                                <span class="text-sm font-medium">عرض المصروفات</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- تقارير الأداء -->
+                    <div class="quick-action-card fade-in cursor-pointer" onclick="navigateTo('#')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">📊</div>
+                                <h3 class="text-xl font-bold mb-2">تقارير الأداء</h3>
+                                <p class="text-gray-300 text-sm">عرض تحليلات شاملة للأداء</p>
+                            </div>
+                            <div class="flex items-center text-purple-300 mt-4">
+                                <span class="text-sm font-medium">عرض التقارير</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- إدارة الموظفين -->
+                    <div class="quick-action-card fade-in cursor-pointer" onclick="navigateTo('employees.html')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">👥</div>
+                                <h3 class="text-xl font-bold mb-2">إدارة الموظفين</h3>
+                                <p class="text-gray-300 text-sm">إضافة وإدارة بيانات الموظفين</p>
+                            </div>
+                            <div class="flex items-center text-orange-300 mt-4">
+                                <span class="text-sm font-medium">إدارة الموظفين</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- البحث عن شحنة -->
+                    <div class="quick-action-card fade-in cursor-pointer" onclick="openSearchModal('serchin.html')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">🔍</div>
+                                <h3 class="text-xl font-bold mb-2">البحث عن شحنة</h3>
+                                <p class="text-gray-300 text-sm">البحث السريع عن أي شحنة</p>
+                            </div>
+                            <div class="flex items-center text-cyan-300 mt-4">
+                                <span class="text-sm font-medium">بحث سريع</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- الإعدادات -->
+                    <div class="quick-action-card fade-in cursor-pointer" onclick="navigateTo('setting.html')">
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="text-4xl mb-4">⚙️</div>
+                                <h3 class="text-xl font-bold mb-2">الإعدادات</h3>
+                                <p class="text-gray-300 text-sm">إعدادات النظام والحسابات</p>
+                            </div>
+                            <div class="flex items-center text-red-300 mt-4">
+                                <span class="text-sm font-medium">الإعدادات</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الرسوم البيانية والنشاط -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- الرسم البياني -->
+                <div class="chart-container fade-in">
+                    <div class="flex items-center gap-3 mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="text-xl font-bold text-gray-800">الشحنات الأسبوعية</h3>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- النشاط الأخير -->
+                <div class="chart-container fade-in">
+                    <div class="flex items-center gap-3 mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="text-xl font-bold text-gray-800">النشاط الأخير</h3>
+                    </div>
+                    <div class="space-y-4 max-h-64 overflow-y-auto">
+                        <div class="activity-item success">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">تم تسليم الشحنة #SH001234</h4>
+                                    <p class="text-sm text-gray-600">للعميل: أحمد محمد - الرياض</p>
+                                </div>
+                                <span class="text-xs text-gray-500">منذ 10 دقائق</span>
+                            </div>
+                        </div>
+
+                        <div class="activity-item info">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">شحنة جديدة مضافة #SH001235</h4>
+                                    <p class="text-sm text-gray-600">من: شركة التقنية المتقدمة</p>
+                                </div>
+                                <span class="text-xs text-gray-500">منذ 25 دقيقة</span>
+                            </div>
+                        </div>
+
+                        <div class="activity-item warning">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">تأخير في التسليم #SH001233</h4>
+                                    <p class="text-sm text-gray-600">العنوان غير صحيح</p>
+                                </div>
+                                <span class="text-xs text-gray-500">منذ ساعة</span>
+                            </div>
+                        </div>
+
+                        <div class="activity-item success">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">مندوب جديد انضم للفريق</h4>
+                                    <p class="text-sm text-gray-600">محمد أحمد - منطقة الشرق</p>
+                                </div>
+                                <span class="text-xs text-gray-500">منذ ساعتين</span>
+                            </div>
+                        </div>
+
+                        <div class="activity-item error">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">مشكلة في التسليم #SH001231</h4>
+                                    <p class="text-sm text-gray-600">العميل غير متاح</p>
+                                </div>
+                                <span class="text-xs text-gray-500">منذ 3 ساعات</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- معلومات إضافية -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- أفضل الشركات -->
+                <div class="chart-container fade-in">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        🏆 أفضل الشركات
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">شركة التقنية المتقدمة</span>
+                            <span class="text-green-600 font-bold">234 شحنة</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">مؤسسة الإبداع</span>
+                            <span class="text-green-600 font-bold">198 شحنة</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">شركة المستقبل</span>
+                            <span class="text-green-600 font-bold">156 شحنة</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أفضل المندوبين -->
+                <div class="chart-container fade-in">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        👤 أفضل المندوبين
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">أحمد محمد</span>
+                            <span class="text-blue-600 font-bold">89 تسليم</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">سارة أحمد</span>
+                            <span class="text-blue-600 font-bold">76 تسليم</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">محمود علي</span>
+                            <span class="text-blue-600 font-bold">65 تسليم</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تنبيهات هامة -->
+                <div class="chart-container fade-in">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        ⚠️ تنبيهات هامة
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-red-50 border-r-4 border-red-500 rounded-lg">
+                            <p class="text-sm font-medium text-red-800">3 شحنات متأخرة</p>
+                            <p class="text-xs text-red-600">تحتاج متابعة فورية</p>
+                        </div>
+                        <div class="p-3 bg-yellow-50 border-r-4 border-yellow-500 rounded-lg">
+                            <p class="text-sm font-medium text-yellow-800">مخزن الفرع الشمالي يحتاج تجديد</p>
+                            <p class="text-xs text-yellow-600">مساحة التخزين 90%</p>
+                        </div>
+                        <div class="p-3 bg-blue-50 border-r-4 border-blue-500 rounded-lg">
+                            <p class="text-sm font-medium text-blue-800">تحديث النظام متاح</p>
+                            <p class="text-xs text-blue-600">إصدار 2.1.0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة البحث السريع -->
+    <div id="searchModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-box w-11/12 max-w-2xl p-0 rounded-3xl bg-white">
+            <div class="sticky top-0 z-10 bg-gradient-to-r from-cyan-600 to-blue-600 p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        البحث السريع عن شحنة
+                    </h3>
+                    <button onclick="closeSearchModal()" class="btn btn-ghost btn-circle text-white hover:bg-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="form-control w-full mb-6">
+                    <label class="label">
+                        <span class="label-text font-semibold">رقم الشحنة أو رقم الهاتف</span>
+                    </label>
+                    <input type="text" id="searchInput" class="input input-bordered input-lg"
+                        placeholder="ادخل رقم الشحنة أو رقم هاتف المستلم..." />
+                </div>
+
+                <div class="flex justify-end gap-4">
+                    <button onclick="closeSearchModal()" class="btn btn-outline btn-lg">
+                        إلغاء
+                    </button>
+                    <button onclick="performSearch()" class="btn btn-primary btn-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        بحث
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريط الجانبي -->
+    <div id="sidebar"
+        class="fixed top-0 right-0 h-full w-80 bg-gray-800 text-white z-50 sidebar-transition sidebar-closed shadow-2xl overflow-y-auto">
+        <div class="p-6">
+            <!-- رأس الشريط الجانبي -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-700">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-gray-800 font-bold text-lg">SX</span>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Speed-Xfinity</h2>
+                    <p class="text-sm text-gray-400">المدير العام</p>
+                </div>
+                <button id="closeSidebar" class="p-1 hover:bg-gray-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- القائمة -->
+            <nav class="space-y-2">
+                <a href="homepage.html"
+                    class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="font-semibold">الرئيسية</span>
+                </a>
+
+                <!-- الإعدادات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('settings')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الإعدادات</span>
+                        <svg id="settings-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="settings-submenu" class="submenu mr-8">
+                        <a href="stors.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المخازن</span>
+                        </a>
+                        <a href="employee.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الموظفين</span>
+                        </a>
+                        <a href="companies.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>الشركات</span>
+                        </a>
+                        <a href="locat.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المواقع</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الشحنات مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('shipments')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الشحنات</span>
+                        <svg id="shipments-arrow" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="shipments-submenu" class="submenu mr-8">
+                        <a href="datarecovery.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>استيراد بيانات</span>
+                        </a>
+                        <a href="enterdelegate.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مندوب</span>
+                        </a>
+                        <a href="enterstore.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>دخول الى مخزن</span>
+                        </a>
+                        <a href="returns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المرتجعات</span>
+                        </a>
+                        <a href="datareturns.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>فواتير المرتجعات</span>
+                        </a>
+                        <a href="deliveres.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>التسليمات</span>
+                        </a>
+                        <a href="barcode.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg mb-1 transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>طباعة الباركود</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- المالية مع قائمة فرعية -->
+                <div>
+                    <button onclick="toggleSubmenu('finance')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">المالية</span>
+                        <svg id="finance-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="finance-submenu" class="submenu mr-8">
+                        <a href="exepenses.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>المصروفات</span>
+                        </a>
+                        <a href="serchin.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>بحث عن شحنه</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- الحساب -->
+                <div>
+                    <button onclick="toggleSubmenu('account')"
+                        class="flex items-center gap-4 p-4 text-gray-300 hover:text-white hover:bg-blue-600 w-full text-right rounded-xl transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                        <span class="flex-1 font-semibold">الحساب</span>
+                        <svg id="account-arrow" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="account-submenu" class="submenu mr-8">
+                        <a href="login.html"
+                            class="flex items-center gap-3 p-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-300">
+                            <span class="w-2 h-2 bg-current rounded-full"></span>
+                            <span>تسجيل خروج</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- خلفية تعتيم عند فتح الشريط الجانبي -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- الفوتر -->
+    <footer class="bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- القسم الأول -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Speed-Xfinity</h2>
+                    <p class="text-sm leading-relaxed">
+                        منصة لإدارة المندوبين والمواقع بسهولة وفعالية، بواجهة حديثة وألوان متناسقة.
+                    </p>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">روابط سريعة</h2>
+                    <ul class="space-y-1">
+                        <li><a href="homepage.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+                        <li><a href="setting.html" class="hover:text-blue-400 transition">الإعدادات</a></li>
+                        <li><a href="locat.html" class="hover:text-blue-400 transition">المواقع</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- خط فاصل -->
+            <div class="border-t border-purple-700 mt-6 pt-4 text-center text-xs text-gray-400">
+                <p class="text-xs text-gray-400 text-center">
+                    © 2025 <span class="text-blue-400 font-semibold">Host_Cube</span>
+                </p>
+                <p class="text-xs text-gray-500 text-center mt-1">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let sidebarOpen = false;
+
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('overlay');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        // إدارة الشريط الجانبي
+        function openSidebarFunc() {
+            sidebar.classList.remove('sidebar-closed');
+            sidebar.classList.add('sidebar-open');
+            mainContent.style.marginRight = '320px';
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            mainContent.style.marginRight = '0';
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        }
+
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            } else {
+                openSidebarFunc();
+            }
+        }
+
+        // ربط أزرار التحكم
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', () => {
+            if (sidebarOpen) {
+                closeSidebarFunc();
+            }
+        });
+
+        // دالة تبديل القائمة الفرعية
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            const arrow = document.getElementById(menuId + '-arrow');
+
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // فتح نافذة البحث
+        function openSearchModal() {
+            document.getElementById('searchModal').classList.add('modal-open');
+            document.getElementById('searchInput').focus();
+        }
+
+        // إغلاق نافذة البحث
+        function closeSearchModal() {
+            document.getElementById('searchModal').classList.remove('modal-open');
+            document.getElementById('searchInput').value = '';
+        }
+
+        // تنفيذ البحث
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) {
+                alert('يرجى إدخال رقم الشحنة أو رقم الهاتف');
+                return;
+            }
+
+            // هنا يمكن إضافة منطق البحث الفعلي
+            alert(`جاري البحث عن: ${searchTerm}`);
+            closeSearchModal();
+        }
+
+        // التنقل إلى صفحة
+        function navigateTo(url) {
+            if (url !== '#') {
+                window.location.href = url;
+            }
+        }
+
+        // تحديث الوقت الحالي
+        function updateLastUpdate() {
+            const now = new Date();
+            const timeString = now.toLocaleString('ar-SA', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdate').textContent = timeString;
+        }
+
+        // إعداد الرسم البياني
+        function setupChart() {
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+                    datasets: [{
+                        label: 'الشحنات المرسلة',
+                        data: [45, 52, 48, 61, 55, 67, 43],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }, {
+                        label: 'الشحنات المستلمة',
+                        data: [38, 48, 45, 54, 51, 62, 40],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    family: 'Cairo',
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Cairo'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Cairo'
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // إعداد الأحداث عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            sidebarToggle.addEventListener('click', toggleSidebar);
+
+            // تحديث الوقت
+            updateLastUpdate();
+            setInterval(updateLastUpdate, 60000); // تحديث كل دقيقة
+
+            // إعداد الرسم البياني
+            setupChart();
+
+            // إغلاق النوافذ المنبثقة عند النقر خارجها
+            document.getElementById('searchModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeSearchModal();
+                }
+            });
+
+            // إضافة أحداث لوحة المفاتيح
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeSearchModal();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    openSearchModal();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
